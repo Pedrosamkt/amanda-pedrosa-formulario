@@ -29,12 +29,37 @@ const CONFIG = {
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-  /* ── barra fica com borda ao rolar ─────────────────────────── */
+  /* o número ainda é o de exemplo? */
+  const numberReady = () =>
+    CONFIG.whatsapp.replace(/\D/g, '').replace(/0/g, '') !== '55';
+
+  if (!numberReady()) {
+    console.warn('[config] Troque CONFIG.whatsapp em assets/js/main.js pelo número real.');
+  }
+
+  /* ── barra fica com borda ao rolar (só na versão escura) ───── */
 
   const bar = $('.bar');
-  const onScroll = () => bar.classList.toggle('is-stuck', window.scrollY > 12);
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
+  if (bar) {
+    const onScroll = () => bar.classList.toggle('is-stuck', window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* ── botão de WhatsApp direto ──────────────────────────────── */
+
+  const direct = $('#wpp-direct');
+  if (direct) {
+    if (numberReady()) {
+      const oi = 'Oi, Amanda. Vim pela página do diagnóstico e queria conversar.';
+      direct.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(oi)}`;
+    } else {
+      /* sem número configurado, o botão sairia quebrado no ar */
+      direct.hidden = true;
+      const intro = $('#alt-wpp');
+      if (intro) intro.hidden = true;
+    }
+  }
 
   /* ── revelação no scroll ───────────────────────────────────── */
 
@@ -163,11 +188,15 @@ const CONFIG = {
     $('#done-nome').textContent = d.nome.split(' ')[0];
 
     const wpp = $('#done-wpp');
-    if (CONFIG.whatsapp.replace(/\D/g, '').replace(/0/g, '') === '55') {
+    if (!numberReady()) {
       wpp.remove();               // número ainda não configurado
     } else {
       wpp.href = link;
     }
+
+    /* o convite pro WhatsApp direto já não faz sentido depois do envio */
+    ['#alt-wpp', '#wpp-direct'].forEach((sel) => { const el = $(sel); if (el) el.hidden = true; });
+
     done.scrollIntoView({ block: 'center', behavior: 'smooth' });
   };
 
@@ -179,6 +208,7 @@ const CONFIG = {
     const data = collect();
     const link = whatsappLink(data);
 
+    const label = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Enviando…';
 
@@ -203,7 +233,7 @@ const CONFIG = {
       showDone(data, link);
     } catch (err) {
       btn.disabled = false;
-      btn.textContent = 'Quero meu diagnóstico';
+      btn.textContent = label;
       statusEl.textContent = 'Não consegui enviar agora. Tenta de novo em alguns segundos.';
       console.error('[form]', err);
     }
