@@ -1,26 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    Amanda Pedrosa — página de captura
-   Configure o bloco abaixo e a página está pronta para rodar.
-   ═══════════════════════════════════════════════════════════════ */
-
-const CONFIG = {
-  // Seu WhatsApp com DDI e DDD, só números. Ex.: 5511999998888
-  whatsapp: '5500000000000',
-
-  // OPCIONAL — URL que recebe o lead (Make, Zapier, n8n, Sheets, CRM…).
-  // Se ficar vazio, o lead é enviado direto pelo WhatsApp.
-  webhookUrl: '',
-
-  // OPCIONAL — para onde levar depois do envio (ex.: 'obrigado.html').
-  // Vazio = mostra a confirmação na própria página.
-  redirectOnSuccess: '',
-
-  // Abre o WhatsApp sozinho depois do envio.
-  autoOpenWhatsapp: true,
-};
-
-/* ═══════════════════════════════════════════════════════════════
-   Daqui para baixo não precisa mexer.
+   O que você configura está em assets/js/config.js. Aqui não precisa mexer.
    ═══════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -34,7 +14,7 @@ const CONFIG = {
     CONFIG.whatsapp.replace(/\D/g, '').replace(/0/g, '') !== '55';
 
   if (!numberReady()) {
-    console.warn('[config] Troque CONFIG.whatsapp em assets/js/main.js pelo número real.');
+    console.warn('[config] Troque CONFIG.whatsapp em assets/js/config.js pelo número real.');
   }
 
   /* ── barra fica com borda ao rolar (só na versão escura) ───── */
@@ -85,14 +65,17 @@ const CONFIG = {
   const statusEl = $('#form-status');
   const btn = $('#submit-btn');
 
-  /* origem da visita — importa mais do que parece na hora de otimizar */
-  const params = new URLSearchParams(location.search);
-  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach((k) => {
-    const input = form.elements[k];
-    if (input) input.value = params.get(k) || '';
-  });
-  if (form.elements.referrer) form.elements.referrer.value = document.referrer || 'direto';
-  if (form.elements.pagina) form.elements.pagina.value = location.href;
+  /* Origem da visita: UTMs, fbclid e os cookies do pixel. Cada campo escondido
+     que existir no formulário é preenchido com o valor de mesmo nome — é assim
+     que a origem chega junto do lead na sua planilha. */
+  const preencherOrigem = () => {
+    const ctx = window.Rastreio ? window.Rastreio.contexto() : {};
+    Object.keys(ctx).forEach((k) => {
+      const campo = form.elements[k];
+      if (campo) campo.value = ctx[k];
+    });
+  };
+  preencherOrigem();
 
   /* máscara de telefone */
   const tel = $('#whatsapp');
@@ -176,11 +159,6 @@ const CONFIG = {
     return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(linhas.join('\n'))}`;
   };
 
-  const track = () => {
-    if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
-    if (typeof window.gtag === 'function') window.gtag('event', 'generate_lead');
-  };
-
   const showDone = (d, link) => {
     const done = $('#done');
     form.hidden = true;
@@ -200,11 +178,16 @@ const CONFIG = {
     done.scrollIntoView({ block: 'center', behavior: 'smooth' });
   };
 
+  /* Guardado fora do handler: se o envio falhar e a pessoa tentar de novo,
+     o mesmo evento é reaproveitado. Sem isso, a Meta contaria dois leads. */
+  let evento = null;
+
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
     statusEl.textContent = '';
     if (!validate()) return;
 
+    preencherOrigem();          // o pixel pode ter gravado o _fbp depois do load
     const data = collect();
     const link = whatsappLink(data);
 
@@ -213,16 +196,19 @@ const CONFIG = {
     btn.textContent = 'Enviando…';
 
     try {
+      /* Dispara o Lead no navegador e monta o mesmo evento para o servidor.
+         Os dois carregam o mesmo event_id — é o que impede a contagem dupla. */
+      if (!evento && window.Rastreio) evento = await window.Rastreio.lead(data);
+      if (evento) data.event_id = evento.event_id;
+
       if (CONFIG.webhookUrl) {
         const res = await fetch(CONFIG.webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
+          body: JSON.stringify(evento ? Object.assign({}, data, { meta: evento }) : data),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
       }
-
-      track();
 
       if (CONFIG.autoOpenWhatsapp) window.open(link, '_blank', 'noopener');
 

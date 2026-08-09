@@ -27,24 +27,10 @@
 
 <link rel="stylesheet" href="assets/css/style.css">
 
-<!--
-  ============================================================
-  PIXELS — descomente e troque os IDs antes de subir tráfego.
-  ============================================================
-
-  <script>
-  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-  document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', 'SEU_PIXEL_ID');
-  fbq('track', 'PageView');
-  </script>
-
-  O evento de conversão (Lead) já é disparado pelo main.js quando o
-  formulário é enviado com sucesso — não precisa configurar nada além do init.
--->
+<!-- O pixel da Meta e o GA4 são instalados pelo tracking.js a partir do
+     config.js. Não é preciso colar script de rastreamento aqui. -->
+<script src="assets/js/config.js"></script>
+<script src="assets/js/tracking.js"></script>
 </head>
 
 <body>
@@ -452,10 +438,12 @@
           <p class="err" data-err-for="consent"></p>
         </div>
 
-        <!-- origem da visita — preenchido pelo main.js -->
+        <!-- De onde a pessoa veio — preenchido sozinho pelo tracking.js -->
         <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium">
         <input type="hidden" name="utm_campaign"><input type="hidden" name="utm_content">
-        <input type="hidden" name="utm_term"><input type="hidden" name="referrer">
+        <input type="hidden" name="utm_term"><input type="hidden" name="fbclid">
+        <input type="hidden" name="fbc"><input type="hidden" name="fbp">
+        <input type="hidden" name="external_id"><input type="hidden" name="referrer">
         <input type="hidden" name="pagina">
 
         <div class="field field--wide">
@@ -552,7 +540,8 @@
       <a href="politica-de-privacidade.html">Política de privacidade</a>
     </p>
     <p class="foot__legal">
-      Esta página não é afiliada ao Meta, ao Google ou a qualquer plataforma de anúncios.
+      Esta página usa cookies e o pixel da Meta para medir a performance dos anúncios.
+      Não é afiliada ao Meta, ao Google ou a qualquer plataforma de anúncios.
       Resultados dependem do seu mercado, da sua estrutura de atendimento e da verba investida.
     </p>
   </div>

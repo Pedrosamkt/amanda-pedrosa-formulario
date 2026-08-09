@@ -288,6 +288,16 @@ mark{
 .btn:active{ transform:translateY(1px); }
 .btn[disabled]{ opacity:.5; cursor:not-allowed; transform:none; }
 
+.form__fine{
+  font-size:12.5px;
+  line-height:1.55;
+  color:var(--mute);
+  text-align:center;
+  margin:12px 0 0;
+}
+.form__fine a{ color:var(--mute); }
+.form__fine a:hover{ color:var(--ink); }
+
 .form__status{
   font-size:13.5px;
   color:var(--warn-ink);

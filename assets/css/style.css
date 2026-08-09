@@ -644,6 +644,12 @@ p{ margin:0 0 16px; }
   color:var(--slate); margin:0;
 }
 .foot__legal{ max-width:70ch; opacity:.65; margin-top:8px; }
+
+code{
+  font-family:var(--f-mono);
+  font-size:.88em;
+  color:var(--brass);
+}
 .foot__meta a{ color:var(--brass); text-decoration:none; }
 .foot__meta a:hover{ color:var(--brass-hi); }
 

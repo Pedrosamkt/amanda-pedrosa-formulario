@@ -25,22 +25,10 @@
 
 <link rel="stylesheet" href="assets/css/carta.css">
 
-<!--
-  ============================================================
-  PIXEL — descomente e troque o ID antes de subir tráfego.
-  O evento Lead dispara sozinho quando o formulário é enviado.
-  ============================================================
-
-  <script>
-  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-  document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', 'SEU_PIXEL_ID');
-  fbq('track', 'PageView');
-  </script>
--->
+<!-- O pixel da Meta e o GA4 são instalados pelo tracking.js a partir do
+     config.js. Não é preciso colar script de rastreamento aqui. -->
+<script src="assets/js/config.js"></script>
+<script src="assets/js/tracking.js"></script>
 </head>
 
 <body>
@@ -295,13 +283,20 @@
       <p class="err" data-err-for="consent"></p>
     </div>
 
-    <!-- origem da visita — preenchido pelo main.js -->
+    <!-- De onde a pessoa veio. Preenchido sozinho pelo tracking.js: é isso que
+         faz você saber, na planilha, qual anúncio trouxe cada lead. -->
     <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium">
     <input type="hidden" name="utm_campaign"><input type="hidden" name="utm_content">
-    <input type="hidden" name="utm_term"><input type="hidden" name="referrer">
+    <input type="hidden" name="utm_term"><input type="hidden" name="fbclid">
+    <input type="hidden" name="fbc"><input type="hidden" name="fbp">
+    <input type="hidden" name="external_id"><input type="hidden" name="referrer">
     <input type="hidden" name="pagina">
 
     <button class="btn" type="submit" id="submit-btn">Solicitar meu diagnóstico</button>
+    <p class="form__fine">
+      Ao enviar, seus dados são tratados conforme a
+      <a href="politica-de-privacidade.html">política de privacidade</a>.
+    </p>
     <p class="form__status" id="form-status" role="status" aria-live="polite"></p>
   </form>
 
@@ -335,7 +330,8 @@
     <p>Amanda Pedrosa · <a href="https://instagram.com/SEU_INSTAGRAM" target="_blank" rel="noopener">@seu_instagram</a></p>
     <p class="foot__legal">
       <a href="politica-de-privacidade.html">Política de privacidade</a> ·
-      Esta página não é afiliada ao Meta ou ao Google. Resultados dependem do seu
+      Esta página usa cookies e o pixel da Meta para medir a performance dos
+      anúncios. Não é afiliada ao Meta ou ao Google. Resultados dependem do seu
       mercado, da sua estrutura de atendimento e da verba investida.
     </p>
   </footer>
