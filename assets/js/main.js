@@ -202,12 +202,28 @@
       if (evento) data.event_id = evento.event_id;
 
       if (CONFIG.webhookUrl) {
-        const res = await fetch(CONFIG.webhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(evento ? Object.assign({}, data, { meta: evento }) : data),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const corpo = JSON.stringify(evento ? Object.assign({}, data, { meta: evento }) : data);
+
+        if (/script\.google\.com/.test(CONFIG.webhookUrl)) {
+          /* Planilha do Google. O Apps Script não responde ao preflight do
+             navegador, então mandamos como texto simples (que dispensa
+             preflight) e em modo no-cors. O dado chega; a resposta vem
+             opaca, então não dá para ler o status — só falha de rede
+             aparece aqui. Se um lead sumir, ele está na aba "erros". */
+          await fetch(CONFIG.webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: corpo,
+          });
+        } else {
+          const res = await fetch(CONFIG.webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: corpo,
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        }
       }
 
       if (CONFIG.autoOpenWhatsapp) window.open(link, '_blank', 'noopener');

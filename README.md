@@ -27,6 +27,8 @@ assets/js/config.js            ← O ÚNICO ARQUIVO QUE VOCÊ EDITA
 assets/js/tracking.js          pixel, cookies e evento pronto pra Conversions API
 assets/js/main.js              formulário, máscara, validação e envio
 
+planilha/Codigo.gs             script que grava os leads na planilha "forms site"
+
 assets/css/carta.css           estilo da carta
 assets/css/style.css           estilo da versão escura
 assets/img/                    coloque aqui a sua foto (amanda.jpg) e a og.jpg
@@ -61,10 +63,10 @@ ou do Google é carregado e nada sai da página. A origem do clique continua sen
 guardada num cookie do seu próprio domínio, para não se perder se você ligar o pixel
 depois.
 
-**`webhookUrl`** — para onde o lead vai além do WhatsApp: um cenário do Make, um Zap,
-um fluxo do n8n, o seu CRM. É também por aqui que a Conversions API é alimentada
-(seção 3). Se ficar vazio, nada se perde — o lead continua chegando pelo WhatsApp
-com todas as respostas escritas na mensagem.
+**`webhookUrl`** — para onde o lead vai além do WhatsApp. O caminho mais simples é a
+planilha do Google (seção 4); também aceita Make, Zapier, n8n ou o seu CRM. É por
+aqui que a Conversions API é alimentada (seção 3). Se ficar vazio, nada se perde —
+o lead continua chegando pelo WhatsApp com todas as respostas escritas na mensagem.
 
 **`valorLead`** — quanto vale um lead pra você. Com esse número, a Meta otimiza por
 valor e não só por volume. A conta é a mesma do diagnóstico:
@@ -184,7 +186,90 @@ Se aparecerem separados, o `event_id` não está sendo repassado.
 
 ---
 
-## 4. LGPD
+## 4. Mandar os leads para a planilha "forms site"
+
+O caminho mais curto e sem mensalidade: um script dentro da própria planilha
+recebe os envios e escreve as linhas. Sem Make, sem Zapier. Leva uns 10 minutos e
+só se faz uma vez.
+
+**1. Crie a planilha.** No Google Drive, nova planilha, nome **`forms site`**.
+Não precisa criar aba nem cabeçalho — o script faz isso sozinho no primeiro lead.
+
+**2. Cole o script.** Dentro da planilha: menu **Extensões → Apps Script**. Apague
+o `function myFunction() {}` que vem lá e cole o conteúdo de
+[`planilha/Codigo.gs`](planilha/Codigo.gs). Salve (💾).
+
+**3. Teste antes de publicar.** No editor, escolha a função `testarComLeadFalso` e
+clique em **▶ Executar**. O Google vai pedir autorização — é normal, o script está
+mexendo na sua planilha. Em "Este app não foi verificado", clique em *Avançado →
+Acessar (não seguro)*: o app é seu, você acabou de escrever. Volte à planilha: deve
+existir uma aba **leads** com cabeçalho e uma linha de teste. Apague a linha.
+
+**4. Publique.** No editor: **Implantar → Nova implantação → Tipo: app da Web**.
+
+| Campo | Valor |
+|---|---|
+| Executar como | **Eu** |
+| Quem pode acessar | **Qualquer pessoa** |
+
+"Qualquer pessoa" assusta, mas é obrigatório: quem envia é o navegador de quem
+preencheu o formulário, e essa pessoa não tem conta na sua planilha. O script só
+sabe escrever linha — não lê e não devolve nada.
+
+**5. Ligue na página.** Copie a URL da implantação (termina em `/exec`) e cole em
+`webhookUrl`, no `config.js`:
+
+```js
+webhookUrl: 'https://script.google.com/macros/s/AKfycb.../exec',
+```
+
+Pronto. Preencha o formulário na página e a linha aparece na planilha.
+
+**Se mudar o `Codigo.gs` depois**, é preciso **Implantar → Gerenciar implantações →
+✏️ → Versão: Nova versão**. Sem isso o Google continua rodando a versão antiga.
+
+### Bônus: a Conversions API sem Make nem Zapier
+
+O mesmo script manda a conversão para a Meta, e o token fica guardado no Google —
+nunca na página, onde qualquer um leria.
+
+No editor: **⚙ Configurações do projeto → Propriedades do script → Adicionar**:
+
+| Propriedade | Valor |
+|---|---|
+| `META_PIXEL_ID` | o ID do seu pixel |
+| `META_TOKEN` | o token de acesso gerado no Gerenciador de Eventos |
+
+A coluna **Enviado à Meta** da planilha passa a mostrar o resultado de cada envio:
+`sim (1)` quando a Meta confirmou, ou o código do erro quando recusou. É o seu
+painel de saúde do rastreamento, direto na planilha.
+
+Uma limitação honesta: o Apps Script não enxerga o IP de quem enviou, então o
+`client_ip_address` não vai. O pareamento fica um pouco abaixo do que se consegue
+com Make ou n8n. Na prática, com telefone, nome, cidade, `fbc` e `fbp`, a qualidade
+já costuma ficar boa. Se o Gerenciador reclamar da qualidade da correspondência, aí
+vale trocar para o n8n.
+
+### O que a planilha vai ter
+
+Uma aba **leads**, uma linha por envio:
+
+```
+Data · Nome · WhatsApp · Negócio · Cidade · Segmento · Faturamento ·
+Investe hoje · Maior gargalo · Origem · Mídia · Campanha · Criativo ·
+Palavra-chave · Veio de · Página · Clique do anúncio · Aceite ·
+Enviado à Meta · ID do evento · ID do visitante
+```
+
+Com isso, uma tabela dinâmica por **Criativo** já te diz qual anúncio traz lead e
+qual só queima verba.
+
+E uma aba **erros**, criada só se algum envio falhar, guardando o conteúdo bruto
+recebido. Nenhum lead se perde em silêncio: se sumir da aba `leads`, está lá.
+
+---
+
+## 5. LGPD
 
 O rastreamento está declarado na `politica-de-privacidade.html`: quais cookies são
 gravados, por quanto tempo, que os dados vão embaralhados para a Meta e que ela não
@@ -197,7 +282,7 @@ um banner de consentimento antes. Se você quiser esse banner, é só me pedir.
 
 ---
 
-## 5. O que ainda falta preencher
+## 6. O que ainda falta preencher
 
 Tudo que está entre colchetes `[ … ]` ou marcado com `TODO` é conteúdo que só você
 tem. Ordem de prioridade:
@@ -225,7 +310,7 @@ verdade antes de subir, ou troque:
 
 ---
 
-## 6. Publicar
+## 7. Publicar
 
 Qualquer hospedagem de site estático serve. As mais rápidas:
 

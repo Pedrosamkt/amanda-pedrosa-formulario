@@ -18,8 +18,10 @@ const CONFIG = {
   /* ID de métrica do Google Analytics 4 (G-XXXXXXXXXX). Opcional. */
   ga4Id: '',
 
-  /* Para onde o lead é enviado: Make, Zapier, n8n, CRM, Planilhas.
-     É por aqui que a Conversions API da Meta é alimentada — veja o README.
+  /* Para onde o lead é enviado. O caminho mais simples é a planilha do
+     Google: cole aqui a URL do app da web do Apps Script (README, seção 4).
+     Também aceita Make, Zapier, n8n ou o seu CRM.
+     É por aqui que a Conversions API da Meta é alimentada.
      Vazio = o lead vai só pelo WhatsApp. */
   webhookUrl: '',
 
