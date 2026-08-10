@@ -23,7 +23,7 @@ const CONFIG = {
      Também aceita Make, Zapier, n8n ou o seu CRM.
      É por aqui que a Conversions API da Meta é alimentada.
      Vazio = o lead vai só pelo WhatsApp. */
-  webhookUrl: '',
+  webhookUrl: 'https://script.google.com/macros/s/AKfycbzo-e3Oc4MbKF-VsrDBU8bNHfpK-1NLGPD34aqxQlP8cPheDNkPqcBQ8XgmSDXtv8hZPg/exec',
 
   /* Quanto vale um lead pra você, em reais. Serve para a Meta otimizar
      por valor, não só por volume. Use a conta:
