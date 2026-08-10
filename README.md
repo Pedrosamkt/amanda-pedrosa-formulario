@@ -310,45 +310,64 @@ verdade antes de subir, ou troque:
 
 ---
 
-## 7. Publicar (GitHub Pages, já configurado)
+## 7. Publicar na Vercel
 
-O repositório já tem a esteira de publicação em
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml). **Falta um clique
-seu**, uma única vez:
+O [`vercel.json`](vercel.json) já está pronto: monta o site, define o cache e liga
+os cabeçalhos de segurança. **Você não precisa configurar nada no painel** — a
+Vercel lê esse arquivo.
 
-No GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+**1.** Entre em [vercel.com](https://vercel.com) e crie a conta com **Continue with
+GitHub**. Autorize o acesso ao repositório `amanda-pedrosa-formulario`.
 
-Só isso. A partir daí, todo commit nesta branch republica o site sozinho. O endereço
-aparece na aba **Actions**, ao fim da execução, e fica assim:
+**2.** No painel: **Add New → Project → Import** no repositório.
+
+**3.** Na tela de importação, **mude só uma coisa**: em *Branch*, escolha
+`claude/capture-page-ted-sonsantos-o1kzm2`. O repositório não tem `main`, e a Vercel
+sugere ela por padrão. Todo o resto (framework, build command, output directory)
+deixe **como está** — vem do `vercel.json`.
+
+**4.** Clique em **Deploy** e espere. Em cerca de um minuto sai o endereço:
 
 ```
-https://pedrosamkt.github.io/amanda-pedrosa-formulario/
+https://amanda-pedrosa-formulario.vercel.app
 ```
 
-O que vai ao ar é só o que o navegador precisa — `index.html`,
-`versao-escura.html`, a política de privacidade e a pasta `assets`. O README e o
-script da planilha continuam no repositório, mas fora do ar.
+A partir daí, todo commit nessa branch republica o site sozinho.
 
-**Por que isso importa além de ter um endereço:** o GitHub Pages serve em `https://`,
+O que vai ao ar é só o que o navegador precisa — as duas páginas, a política de
+privacidade e a pasta `assets`. O README e o script da planilha continuam no
+repositório, mas fora do ar.
+
+**Por que hospedar importa, além de ter um endereço:** a Vercel serve em `https://`,
 e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo o arquivo
 direto do computador, os hashes saem vazios e o pareamento com a Meta piora.
 
 ### Domínio próprio
 
-Quando quiser trocar `pedrosamkt.github.io/...` por um domínio seu:
-
-1. **Settings → Pages → Custom domain**, escreva o domínio e salve.
-2. No painel do seu domínio, aponte um `CNAME` de `www` para `pedrosamkt.github.io`
-   (ou registros `A` para os IPs do GitHub, se quiser o domínio sem `www`).
-3. Espere a propagação e marque **Enforce HTTPS**.
-4. Volte no `index.html` e troque `SEU-DOMINIO.com.br` pelas tags de canonical e
+1. No projeto: **Settings → Domains → Add**, escreva o seu domínio.
+2. A Vercel mostra o registro de DNS para criar no painel do seu domínio —
+   normalmente um `CNAME` de `www` apontando para `cname.vercel-dns.com`.
+3. O certificado HTTPS sai sozinho depois da propagação.
+4. Volte no `index.html` e troque `SEU-DOMINIO.com.br` nas tags de canonical e de
    compartilhamento.
+
+### O que o `vercel.json` já resolve
+
+- **Monta o site** com apenas os arquivos públicos, numa pasta `public`.
+- **Cache:** HTML sempre revalidado (uma correção de texto aparece na hora), `assets`
+  guardados por 1 hora.
+- **Cabeçalhos de segurança:** `nosniff`, `Referrer-Policy`, `X-Frame-Options` e
+  `Permissions-Policy` desligando geolocalização, microfone e câmera.
+
+Não há Content-Security-Policy de propósito: com pixel, fontes e planilha na jogada,
+uma CSP mal ajustada quebra a página em silêncio. Se quiser depois, dá para montar
+com calma e testar.
 
 ### Outras hospedagens
 
-Netlify e Vercel também servem: conecte o repositório no painel, sem pasta de build
-e sem comando de build. Em hospedagem tradicional, suba os arquivos por FTP na raiz
-do domínio — mantendo a pasta `assets` junto.
+Netlify serve igual (mesmo `vercel.json` não vale, mas o comando de build é o mesmo).
+Em hospedagem tradicional, suba por FTP na raiz do domínio: as duas páginas, a
+política e a pasta `assets` inteira.
 
 ---
 
