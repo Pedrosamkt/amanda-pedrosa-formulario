@@ -310,16 +310,69 @@ verdade antes de subir, ou troque:
 
 ---
 
-## 7. Publicar
+## 7. Publicar (GitHub Pages, já configurado)
 
-Qualquer hospedagem de site estático serve. As mais rápidas:
+O repositório já tem a esteira de publicação em
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml). **Falta um clique
+seu**, uma única vez:
 
-- **Netlify / Vercel** — arraste a pasta na tela do painel. Domínio próprio em 2 minutos.
-- **GitHub Pages** — Settings → Pages → branch `main`, pasta `/`.
-- **Hospedagem tradicional** — suba os arquivos por FTP na raiz do domínio.
+No GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
-Para testar no seu computador antes, abra o `index.html` no navegador — funciona
-direto, sem servidor.
+Só isso. A partir daí, todo commit nesta branch republica o site sozinho. O endereço
+aparece na aba **Actions**, ao fim da execução, e fica assim:
+
+```
+https://pedrosamkt.github.io/amanda-pedrosa-formulario/
+```
+
+O que vai ao ar é só o que o navegador precisa — `index.html`,
+`versao-escura.html`, a política de privacidade e a pasta `assets`. O README e o
+script da planilha continuam no repositório, mas fora do ar.
+
+**Por que isso importa além de ter um endereço:** o GitHub Pages serve em `https://`,
+e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo o arquivo
+direto do computador, os hashes saem vazios e o pareamento com a Meta piora.
+
+### Domínio próprio
+
+Quando quiser trocar `pedrosamkt.github.io/...` por um domínio seu:
+
+1. **Settings → Pages → Custom domain**, escreva o domínio e salve.
+2. No painel do seu domínio, aponte um `CNAME` de `www` para `pedrosamkt.github.io`
+   (ou registros `A` para os IPs do GitHub, se quiser o domínio sem `www`).
+3. Espere a propagação e marque **Enforce HTTPS**.
+4. Volte no `index.html` e troque `SEU-DOMINIO.com.br` pelas tags de canonical e
+   compartilhamento.
+
+### Outras hospedagens
+
+Netlify e Vercel também servem: conecte o repositório no painel, sem pasta de build
+e sem comando de build. Em hospedagem tradicional, suba os arquivos por FTP na raiz
+do domínio — mantendo a pasta `assets` junto.
+
+---
+
+## 8. Testar no seu computador
+
+Abrir o `index.html` com dois cliques funciona para conferir texto e layout, mas
+**não serve para testar o rastreamento**: fora de `https://` o navegador bloqueia a
+criptografia e os hashes saem vazios.
+
+Para um teste de verdade, rode um servidor local — dentro da pasta do projeto:
+
+```bash
+python3 -m http.server 8000
+```
+
+E abra `http://localhost:8000`. O `localhost` é tratado como origem segura, então os
+hashes funcionam. Para simular o clique num anúncio, acrescente os parâmetros:
+
+```
+http://localhost:8000/?utm_source=ig&utm_content=criativo_3&fbclid=teste123
+```
+
+Envie o formulário e confira se a linha chegou na planilha com as colunas de origem
+preenchidas.
 
 ---
 
