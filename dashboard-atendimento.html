@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AX Mídia — Painel de Atendimento</title>
+<style>
+  :root {
+    --bg: #0a0e0b;
+    --surface: #121816;
+    --surface2: #1a211e;
+    --stroke: #2a3530;
+    --text: #e8eee9;
+    --muted: #8a9a91;
+    --accent: #3df07a;
+    --accent-dim: #1f6b3a;
+    --warn: #e8b84a;
+    --bad: #e85a5a;
+    --ok: #3df07a;
+    --font: "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 80px; }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--stroke);
+  }
+  .brand { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 6px 0 0; font-size: 22px; font-weight: 600; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  button, .btn {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid var(--stroke);
+    background: var(--surface2);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 6px;
+  }
+  button.primary {
+    background: var(--accent);
+    color: #062012;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  button.ghost { background: transparent; }
+  button:hover { filter: brightness(1.08); }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+  input, textarea, select {
+    width: 100%;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  textarea { min-height: 88px; resize: vertical; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 700px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .stat .n { font-size: 28px; font-weight: 650; font-family: var(--mono); }
+  .stat .l { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stat.ok .n { color: var(--ok); }
+  .stat.warn .n { color: var(--warn); }
+  .stat.bad .n { color: var(--bad); }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 24px;
+  }
+  .panel h2 { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 700px) { .form-row { grid-template-columns: 1fr; } }
+  .form-row.full { grid-template-columns: 1fr; }
+  .drop {
+    border: 1px dashed var(--stroke);
+    border-radius: 8px;
+    padding: 18px;
+    text-align: center;
+    color: var(--muted);
+    background: var(--surface2);
+    cursor: pointer;
+  }
+  .drop strong { color: var(--text); display: block; margin-bottom: 4px; }
+  .preview {
+    margin-top: 10px;
+    max-height: 220px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--stroke);
+  }
+  .preview img { width: 100%; display: block; object-fit: contain; max-height: 220px; background: #000; }
+  .list { display: flex; flex-direction: column; gap: 14px; }
+  .card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  @media (max-width: 700px) { .card { grid-template-columns: 1fr; } }
+  .card-img {
+    background: #000;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; max-height: 260px; }
+  .card-body { padding: 14px 16px 14px 0; }
+  @media (max-width: 700px) { .card-body { padding: 14px; } }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--stroke);
+  }
+  .tag.ok { color: var(--ok); border-color: var(--accent-dim); }
+  .tag.warn { color: var(--warn); border-color: #5c4a1e; }
+  .tag.bad { color: var(--bad); border-color: #5c2a2a; }
+  .card h3 { margin: 8px 0 6px; font-size: 15px; }
+  .card .obs { color: var(--text); line-height: 1.45; white-space: pre-wrap; }
+  .card .meta { margin-top: 10px; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+  .card-actions { margin-top: 12px; display: flex; gap: 8px; }
+  .card-actions button { padding: 6px 10px; font-size: 12px; }
+  .empty-hint { color: var(--muted); font-size: 14px; padding: 8px 0; }
+  body.present .editor-only { display: none !important; }
+  body.present .card-actions { display: none !important; }
+  body.present header .actions .edit-back { display: inline-block; }
+  .edit-back { display: none; }
+  .footnote { margin-top: 28px; font-size: 12px; color: var(--muted); }
+  @media print {
+    body { background: #fff; color: #111; }
+    button, .editor-only, .actions { display: none !important; }
+    .stat, .panel, .card { border-color: #ccc; background: #fff; }
+    .stat .n, .tag.ok { color: #0a7a3a; }
+    .tag.warn { color: #9a6b00; }
+    .tag.bad { color: #b00020; }
+    .card-img { background: #f4f4f4; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand">AX Mídia · Relatório de atendimento</div>
+      <h1 id="titleView">Painel de Atendimento</h1>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost edit-back" id="btnEdit">Voltar a editar</button>
+      <button type="button" class="ghost editor-only" id="btnPresent">Modo cliente</button>
+      <button type="button" class="ghost editor-only" id="btnPrint">Imprimir / PDF</button>
+      <button type="button" class="ghost editor-only" id="btnClear">Limpar painel</button>
+    </div>
+  </header>
+
+  <div class="meta-grid editor-only" id="metaForm">
+    <div>
+      <label for="clientName">Cliente</label>
+      <input id="clientName" placeholder="Ex: Vista do Lago / Riviera">
+    </div>
+    <div>
+      <label for="period">Período</label>
+      <input id="period" placeholder="Ex: 01 a 15/out">
+    </div>
+    <div>
+      <label for="campaign">Campanha</label>
+      <input id="campaign" placeholder="Ex: Meta Ads · WhatsApp">
+    </div>
+    <div>
+      <label for="resume">Resumo executivo</label>
+      <input id="resume" placeholder="Ex: Atendimento lento está elevando o CPL">
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <section class="panel editor-only" id="addPanel">
+    <h2>Novo registro (print + observação)</h2>
+    <div class="form-row">
+      <div>
+        <label for="itemTitle">Título / lead</label>
+        <input id="itemTitle" placeholder="Ex: Lead 14/10 · sem resposta em 2h">
+      </div>
+      <div>
+        <label for="itemStatus">Status</label>
+        <select id="itemStatus">
+          <option value="ok">Bom atendimento</option>
+          <option value="warn">Atenção</option>
+          <option value="bad">Crítico</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div>
+        <label for="itemObs">Observação (o que mostrar ao cliente)</label>
+        <textarea id="itemObs" placeholder="Ex: Lead entrou às 19:12 e só foi respondido às 22:40. Nesse intervalo a campanha continuou gerando custo."></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div>
+        <label>Print do atendimento</label>
+        <div class="drop" id="dropZone">
+          <strong>Clique ou solte a imagem aqui</strong>
+          Print do WhatsApp / chat
+          <input type="file" id="itemFile" accept="image/*" hidden>
+          <div class="preview" id="filePreview" hidden><img alt="Prévia do print"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="primary" id="btnAdd">Adicionar ao painel</button>
+      <button type="button" class="ghost" id="btnResetForm">Limpar formulário</button>
+    </div>
+  </section>
+
+  <section>
+    <h2 style="font-size:15px;margin:0 0 12px" class="editor-only">Registros</h2>
+    <div class="list" id="list"></div>
+  </section>
+
+  <p class="footnote">Os dados ficam salvos neste navegador (local). Use “Modo cliente” para apresentar sem o formulário, ou “Imprimir / PDF” para gerar arquivo.</p>
+</div>
+
+<script>
+(function () {
+  const KEY = "axmidia_atendimento_dashboard_v1";
+  let pendingImage = "";
+
+  const els = {
+    clientName: document.getElementById("clientName"),
+    period: document.getElementById("period"),
+    campaign: document.getElementById("campaign"),
+    resume: document.getElementById("resume"),
+    titleView: document.getElementById("titleView"),
+    stats: document.getElementById("stats"),
+    list: document.getElementById("list"),
+    itemTitle: document.getElementById("itemTitle"),
+    itemStatus: document.getElementById("itemStatus"),
+    itemObs: document.getElementById("itemObs"),
+    itemFile: document.getElementById("itemFile"),
+    dropZone: document.getElementById("dropZone"),
+    filePreview: document.getElementById("filePreview"),
+  };
+
+  function load() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || defaultState();
+    } catch {
+      return defaultState();
+    }
+  }
+
+  function defaultState() {
+    return {
+      clientName: "",
+      period: "",
+      campaign: "",
+      resume: "",
+      items: [],
+    };
+  }
+
+  function save(state) {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
+
+  function statusLabel(s) {
+    if (s === "ok") return "Bom atendimento";
+    if (s === "warn") return "Atenção";
+    return "Crítico";
+  }
+
+  function render() {
+    const state = load();
+    els.clientName.value = state.clientName || "";
+    els.period.value = state.period || "";
+    els.campaign.value = state.campaign || "";
+    els.resume.value = state.resume || "";
+
+    const name = state.clientName || "Painel de Atendimento";
+    els.titleView.textContent = name;
+    if (state.period || state.campaign) {
+      els.titleView.textContent = name + (state.period ? " · " + state.period : "");
+    }
+
+    const total = state.items.length;
+    const ok = state.items.filter((i) => i.status === "ok").length;
+    const warn = state.items.filter((i) => i.status === "warn").length;
+    const bad = state.items.filter((i) => i.status === "bad").length;
+
+    els.stats.innerHTML = [
+      statHtml(total, "Registros", ""),
+      statHtml(ok, "Bom atendimento", "ok"),
+      statHtml(warn, "Atenção", "warn"),
+      statHtml(bad, "Crítico", "bad"),
+    ].join("");
+
+    document.querySelectorAll("#resumeBox").forEach((n) => n.remove());
+    if (state.resume) {
+      els.stats.insertAdjacentHTML(
+        "afterend",
+        `<div class="panel" id="resumeBox"><h2>Leitura do período</h2><p style="margin:0;line-height:1.5">${escapeHtml(state.resume)}</p></div>`
+      );
+    }
+
+    if (!state.items.length) {
+      els.list.innerHTML = '<p class="empty-hint editor-only">Nenhum print ainda. Adicione o primeiro registro acima.</p>';
+      return;
+    }
+
+    els.list.innerHTML = state.items
+      .map((item) => {
+        return `<article class="card" data-id="${item.id}">
+          <div class="card-img">${item.image ? `<img src="${item.image}" alt="Print do atendimento">` : `<span style="color:#666;font-size:13px;padding:12px">Sem print</span>`}</div>
+          <div class="card-body">
+            <span class="tag ${item.status}">${statusLabel(item.status)}</span>
+            <h3>${escapeHtml(item.title || "Sem título")}</h3>
+            <div class="obs">${escapeHtml(item.obs || "")}</div>
+            <div class="meta">${escapeHtml(item.createdAt || "")}</div>
+            <div class="card-actions editor-only">
+              <button type="button" data-del="${item.id}">Remover</button>
+            </div>
+          </div>
+        </article>`;
+      })
+      .join("");
+  }
+
+  function statHtml(n, label, cls) {
+    return `<div class="stat ${cls}"><div class="n">${n}</div><div class="l">${label}</div></div>`;
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function persistMeta() {
+    const state = load();
+    state.clientName = els.clientName.value.trim();
+    state.period = els.period.value.trim();
+    state.campaign = els.campaign.value.trim();
+    state.resume = els.resume.value.trim();
+    save(state);
+    render();
+  }
+
+  ["clientName", "period", "campaign", "resume"].forEach((id) => {
+    els[id].addEventListener("change", persistMeta);
+    els[id].addEventListener("blur", persistMeta);
+  });
+
+  function readFile(file) {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      pendingImage = reader.result;
+      els.filePreview.hidden = false;
+      els.filePreview.querySelector("img").src = pendingImage;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  els.dropZone.addEventListener("click", () => els.itemFile.click());
+  els.itemFile.addEventListener("change", (e) => readFile(e.target.files[0]));
+  els.dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    els.dropZone.style.borderColor = "#3df07a";
+  });
+  els.dropZone.addEventListener("dragleave", () => {
+    els.dropZone.style.borderColor = "";
+  });
+  els.dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    els.dropZone.style.borderColor = "";
+    readFile(e.dataTransfer.files[0]);
+  });
+
+  document.getElementById("btnAdd").addEventListener("click", () => {
+    const title = els.itemTitle.value.trim();
+    const obs = els.itemObs.value.trim();
+    if (!title && !obs && !pendingImage) {
+      alert("Adicione pelo menos um título, observação ou print.");
+      return;
+    }
+    const state = load();
+    state.items.unshift({
+      id: String(Date.now()),
+      title: title || "Registro de atendimento",
+      obs,
+      status: els.itemStatus.value,
+      image: pendingImage,
+      createdAt: new Date().toLocaleString("pt-BR"),
+    });
+    save(state);
+    pendingImage = "";
+    els.itemTitle.value = "";
+    els.itemObs.value = "";
+    els.itemStatus.value = "warn";
+    els.itemFile.value = "";
+    els.filePreview.hidden = true;
+    render();
+  });
+
+  document.getElementById("btnResetForm").addEventListener("click", () => {
+    pendingImage = "";
+    els.itemTitle.value = "";
+    els.itemObs.value = "";
+    els.itemStatus.value = "warn";
+    els.itemFile.value = "";
+    els.filePreview.hidden = true;
+  });
+
+  els.list.addEventListener("click", (e) => {
+    const id = e.target.getAttribute("data-del");
+    if (!id) return;
+    const state = load();
+    state.items = state.items.filter((i) => i.id !== id);
+    save(state);
+    render();
+  });
+
+  document.getElementById("btnPresent").addEventListener("click", () => {
+    document.body.classList.add("present");
+  });
+  document.getElementById("btnEdit").addEventListener("click", () => {
+    document.body.classList.remove("present");
+  });
+  document.getElementById("btnPrint").addEventListener("click", () => {
+    document.body.classList.add("present");
+    setTimeout(() => window.print(), 50);
+  });
+  document.getElementById("btnClear").addEventListener("click", () => {
+    if (!confirm("Apagar todos os registros deste painel?")) return;
+    localStorage.removeItem(KEY);
+    pendingImage = "";
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
