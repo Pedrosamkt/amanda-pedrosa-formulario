@@ -22,7 +22,17 @@ const CONFIG = {
      Google: cole aqui a URL do app da web do Apps Script (README, seção 4).
      Também aceita Make, Zapier, n8n ou o seu CRM.
      É por aqui que a Conversions API da Meta é alimentada.
-     Vazio = o lead vai só pelo WhatsApp. */
+     Vazio = o lead vai só pelo WhatsApp.
+
+     Planilha alvo:
+       https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit
+       ID: 1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U
+     TODO (Amanda): abra ESSA planilha → Extensões → Apps Script → cole
+     planilha/Codigo.gs → Implantar → Nova implantação → app da Web
+     (Executar como: Eu · Quem pode acessar: Qualquer pessoa) → copie a
+     URL que termina em /exec e substitua o valor abaixo. Sem esse deploy
+     NOVO nesta planilha, o formulário NÃO grava nessa sheet. A URL
+     atual pode apontar para outro Apps Script / outra planilha. */
   webhookUrl: 'https://script.google.com/macros/s/AKfycbzo-e3Oc4MbKF-VsrDBU8bNHfpK-1NLGPD34aqxQlP8cPheDNkPqcBQ8XgmSDXtv8hZPg/exec',
 
   /* Quanto vale um lead pra você, em reais. Serve para a Meta otimizar

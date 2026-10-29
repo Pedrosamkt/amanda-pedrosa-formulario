@@ -27,7 +27,7 @@ assets/js/config.js            ← O ÚNICO ARQUIVO QUE VOCÊ EDITA
 assets/js/tracking.js          pixel, cookies e evento pronto pra Conversions API
 assets/js/main.js              formulário, máscara, validação e envio
 
-planilha/Codigo.gs             script que grava os leads na planilha "forms site"
+planilha/Codigo.gs             script que grava os leads na planilha do presente da live
 
 assets/css/carta.css           estilo da carta
 assets/css/style.css           estilo da versão escura
@@ -64,9 +64,12 @@ guardada num cookie do seu próprio domínio, para não se perder se você ligar
 depois.
 
 **`webhookUrl`** — para onde o lead vai além do WhatsApp. O caminho mais simples é a
-planilha do Google (seção 4); também aceita Make, Zapier, n8n ou o seu CRM. É por
-aqui que a Conversions API é alimentada (seção 3). Se ficar vazio, nada se perde —
-o lead continua chegando pelo WhatsApp com todas as respostas escritas na mensagem.
+planilha do presente da live (seção 4 —
+ID `1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U`); também aceita Make, Zapier,
+n8n ou o seu CRM. É por aqui que a Conversions API é alimentada (seção 3). Se
+ficar vazio, nada se perde — o lead continua chegando pelo WhatsApp com todas as
+respostas escritas na mensagem. **Só cole a URL `/exec` depois de implantar o
+Apps Script nessa planilha.**
 
 **`valorLead`** — quanto vale um lead pra você. Com esse número, a Meta otimiza por
 valor e não só por volume. A conta é a mesma do diagnóstico:
@@ -187,17 +190,25 @@ Se aparecerem separados, o `event_id` não está sendo repassado.
 
 ---
 
-## 4. Mandar os leads para a planilha "forms site"
+## 4. Mandar os leads para a planilha do presente da live
 
-O caminho mais curto e sem mensalidade: um script dentro da própria planilha
+O caminho mais curto e sem mensalidade: um script **dentro desta planilha**
 recebe os envios e escreve as linhas. Sem Make, sem Zapier. Leva uns 10 minutos e
 só se faz uma vez.
 
-**1. Crie a planilha.** No Google Drive, nova planilha, nome **`forms site`**.
-Não precisa criar aba nem cabeçalho — o script faz isso sozinho no primeiro lead.
+**Planilha alvo (já criada):**
+[Abrir no Google Sheets](https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit?gid=0#gid=0)
+· ID `1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U`
 
-**2. Cole o script.** Dentro da planilha: menu **Extensões → Apps Script**. Apague
-o `function myFunction() {}` que vem lá e cole o conteúdo de
+> Sem colar o `Codigo.gs` **nessa** planilha e gerar uma implantação nova de app
+> da Web, o formulário **não** grava ali. A `webhookUrl` atual em `config.js`
+> pode apontar para outro Apps Script — só troque depois de ter a URL `/exec`
+> desta planilha. Não invente URL.
+
+**1. Abra a planilha acima** (conta Google com acesso de edição).
+
+**2. Cole o script.** Menu **Extensões → Apps Script**. Apague o
+`function myFunction() {}` que vem lá e cole o conteúdo de
 [`planilha/Codigo.gs`](planilha/Codigo.gs). Salve (💾).
 
 **3. Teste antes de publicar.** No editor, escolha a função `testarComLeadFalso` e
@@ -218,16 +229,21 @@ preencheu o formulário, e essa pessoa não tem conta na sua planilha. O script 
 sabe escrever linha — não lê e não devolve nada.
 
 **5. Ligue na página.** Copie a URL da implantação (termina em `/exec`) e cole em
-`webhookUrl`, no `config.js`:
+`webhookUrl`, no `config.js` (substituindo o valor antigo):
 
 ```js
 webhookUrl: 'https://script.google.com/macros/s/AKfycb.../exec',
 ```
 
-Pronto. Preencha o formulário na página e a linha aparece na planilha.
+Depois faça commit/deploy da página com a URL nova. Pronto: o próximo envio do
+formulário aparece na aba **leads** dessa planilha.
 
 **Se mudar o `Codigo.gs` depois**, é preciso **Implantar → Gerenciar implantações →
 ✏️ → Versão: Nova versão**. Sem isso o Google continua rodando a versão antiga.
+
+Se a aba `leads` já tiver linhas no formato antigo, **renomeie** essa aba antes
+de rodar o script de novo — reescrever o cabeçalho não realinha as respostas
+antigas.
 
 ### Bônus: a Conversions API sem Make nem Zapier
 
@@ -293,7 +309,7 @@ tem. Ordem de prioridade:
 |---|---|
 | `main.js` | seu número de WhatsApp |
 | `index.html` — rodapé | o seu @ do Instagram |
-| `index.html` — `<head>` | `SEU-DOMINIO.com.br` nas tags de canonical e compartilhamento, e uma imagem `og.jpg` de 1200×630 |
+| `index.html` — `<head>` | canonical/og já apontam para `https://presente-live-delas.dev/`; falta uma imagem `og.jpg` de 1200×630 |
 | `politica-de-privacidade.html` | razão social, CNPJ, e-mail de contato e as ferramentas que você usa |
 | `versao-escura.html` — "Quem fala com você" | sua foto (`assets/img/amanda.jpg`, 800×1000) e os três parágrafos de bio |
 | `versao-escura.html` — "Prova social" | **está comentada no HTML.** Descomente e preencha com depoimentos reais de clientes que autorizaram. Não publique com texto de exemplo |
@@ -326,8 +342,23 @@ npm run deploy
 
 Na primeira vez, o Wrangler pede login na conta da Cloudflare (`npx wrangler login`).
 O endereço fica em `https://presente-live-delas.<sua-subconta>.workers.dev`.
-Depois de reivindicar a conta, dá para ligar o domínio `presente-live-delas`
-(ou o seu domínio próprio) em **Settings → Domains & Routes**.
+
+**Domínio pretendido:** `https://presente-live-delas.dev/`
+(as tags canonical/og do HTML já usam esse endereço).
+
+Para o `.dev` ficar no ar de verdade:
+
+1. Reivindique a conta temporária do Worker (link de claim do deploy) **ou**
+   faça `npx wrangler login` na conta Cloudflare definitiva.
+2. No painel do Worker `presente-live-delas`: **Settings → Domains & Routes →
+   Add → Custom domain** → `presente-live-delas.dev`.
+3. No registrador do domínio, aponte o DNS para a Cloudflare (se o domínio ainda
+   não estiver nessa conta). Sem DNS + claim/login, `presente-live-delas.dev`
+   **não** resolve para este Worker.
+
+Deploy temporário (`wrangler deploy --temporary`) serve o site em
+`*.workers.dev`, mas **não** prende de forma permanente um domínio `.dev`
+comprado até a conta ser reivindicada/logada e o domínio customizado adicionado.
 
 **Por que hospedar importa, além de ter um endereço:** a Cloudflare serve em
 `https://`, e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo
@@ -345,12 +376,12 @@ Não há Content-Security-Policy de propósito: com pixel, fontes e planilha na 
 uma CSP mal ajustada quebra a página em silêncio. Se quiser depois, dá para montar
 com calma e testar.
 
-### Domínio próprio
+### Domínio próprio (`presente-live-delas.dev`)
 
 1. No painel do Worker: **Settings → Domains & Routes → Add → Custom domain**.
-2. Escreva o domínio. Se o DNS já está na Cloudflare, o registro e o HTTPS saem sozinhos.
-3. Volte no `index.html` e troque `SEU-DOMINIO.com.br` nas tags de canonical e de
-   compartilhamento.
+2. Digite `presente-live-delas.dev`. Se o DNS já está na Cloudflare dessa conta,
+   o registro e o HTTPS saem sozinhos.
+3. O HTML já aponta canonical/og para `https://presente-live-delas.dev/`.
 
 ### Vercel
 

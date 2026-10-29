@@ -1,9 +1,15 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * Recebe os leads da página e escreve na planilha "forms site".
+ * Recebe os leads da página e escreve na aba "leads" desta planilha.
  *
- * Este arquivo vive DENTRO da planilha (Extensões → Apps Script).
+ * Planilha alvo (Amanda / presente da live):
+ *   https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit
+ *   Spreadsheet ID: 1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U
+ *
+ * Este arquivo vive DENTRO dessa planilha (Extensões → Apps Script).
  * O passo a passo de instalação está no README, seção 4.
+ * Depois de Implantar como app da Web, cole a URL /exec em
+ * assets/js/config.js → CONFIG.webhookUrl.
  *
  * Opcionalmente também manda a conversão para a Meta pela Conversions
  * API. O token fica nas Propriedades do Script — nunca na página.
