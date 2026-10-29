@@ -27,12 +27,17 @@ const CONFIG = {
      Planilha alvo:
        https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit
        ID: 1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U
+     DIAGNÓSTICO (curl deste ambiente): GET → login Google; POST → HTTP 401
+     ("Sorry, unable to open the file"). A implantação atual NÃO está
+     pública — "Quem pode acessar" precisa ser Qualquer pessoa. Com
+     no-cors o site ainda mostra sucesso mesmo assim.
+
      TODO (Amanda): abra ESSA planilha → Extensões → Apps Script → cole
-     planilha/Codigo.gs → Implantar → Nova implantação → app da Web
+     planilha/Codigo.gs (já com openById) → Implantar → Nova implantação
+     (ou Gerenciar → editar → Nova versão) → app da Web
      (Executar como: Eu · Quem pode acessar: Qualquer pessoa) → copie a
-     URL que termina em /exec e substitua o valor abaixo. Sem esse deploy
-     NOVO nesta planilha, o formulário NÃO grava nessa sheet. A URL
-     atual pode apontar para outro Apps Script / outra planilha. */
+     URL /exec e substitua abaixo se mudar. Sem redeploy público, o
+     formulário NÃO grava. */
   webhookUrl: 'https://script.google.com/macros/s/AKfycby1-kT9xwm1ue_yhRZxQ8mRyJIUw_JUFVRGggR4TUDNi67jeclxU6jBC3qOIDNa4tnUfA/exec',
 
   /* Quanto vale um lead pra você, em reais. Serve para a Meta otimizar

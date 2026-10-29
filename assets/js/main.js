@@ -363,15 +363,20 @@
         if (/script\.google\.com/.test(CONFIG.webhookUrl)) {
           /* Planilha do Google. O Apps Script não responde ao preflight do
              navegador, então mandamos como texto simples (que dispensa
-             preflight) e em modo no-cors. O dado chega; a resposta vem
-             opaca, então não dá para ler o status — só falha de rede
-             aparece aqui. Se um lead sumir, ele está na aba "erros". */
+             preflight) e em modo no-cors. A resposta é opaca: HTTP 401
+             (implantação sem "Qualquer pessoa") ainda parece "ok" aqui.
+             Confira na planilha / Execuções do Apps Script. Aba "erros"
+             guarda falhas que o script conseguiu registrar. */
+          console.info(
+            '[form] Enviando lead ao Apps Script (no-cors). Sucesso na tela NÃO confirma gravação na planilha — confira a aba leads.',
+          );
           await fetch(CONFIG.webhookUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: corpo,
           });
+          console.info('[form] POST disparado (resposta opaca). event_id=', data.event_id || '(sem)');
         } else {
           const res = await fetch(CONFIG.webhookUrl, {
             method: 'POST',

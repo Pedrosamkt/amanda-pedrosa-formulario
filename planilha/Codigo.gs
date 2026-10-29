@@ -6,15 +6,32 @@
  *   https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit
  *   Spreadsheet ID: 1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U
  *
- * Este arquivo vive DENTRO dessa planilha (Extensões → Apps Script).
+ * Cole este arquivo no Apps Script (Extensões → Apps Script) dessa
+ * planilha OU em um projeto standalone — PLANILHA_ID abaixo garante
+ * que a gravação sempre acerta a sheet certa.
  * O passo a passo de instalação está no README, seção 4.
  * Depois de Implantar como app da Web, cole a URL /exec em
  * assets/js/config.js → CONFIG.webhookUrl.
+ *
+ * IMPORTANTE — implantação (senão o site mostra "sucesso" e a planilha
+ * fica vazia: o fetch do navegador usa no-cors e não lê o 401):
+ *   Executar como: Eu
+ *   Quem pode acessar: Qualquer pessoa
+ * Depois de alterar este .gs: Implantar → Gerenciar implantações →
+ * editar a implantação ativa → Nova versão → Implantar.
  *
  * Opcionalmente também manda a conversão para a Meta pela Conversions
  * API. O token fica nas Propriedades do Script — nunca na página.
  * ═══════════════════════════════════════════════════════════════
  */
+
+/**
+ * ID fixo da planilha alvo. Preferimos openById em vez de
+ * getActiveSpreadsheet(): se o script for colado/implantado como
+ * projeto standalone (não vinculado à sheet), getActiveSpreadsheet()
+ * devolve null e o lead some — ou cai em outra planilha.
+ */
+const PLANILHA_ID = '1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U';
 
 /** Nome da aba onde os leads são gravados. Ela é criada sozinha. */
 const ABA = 'leads';
@@ -104,8 +121,13 @@ function gravar(dados) {
   }));
 }
 
+/** Abre sempre a planilha do presente da live (ver PLANILHA_ID). */
+function planilhaAlvo() {
+  return SpreadsheetApp.openById(PLANILHA_ID);
+}
+
 function abaDeLeads() {
-  const planilha = SpreadsheetApp.getActiveSpreadsheet();
+  const planilha = planilhaAlvo();
   let aba = planilha.getSheetByName(ABA);
 
   if (!aba) {
@@ -198,7 +220,7 @@ function json(objeto) {
  */
 function registrarFalha(erro, e) {
   try {
-    const planilha = SpreadsheetApp.getActiveSpreadsheet();
+    const planilha = planilhaAlvo();
     let aba = planilha.getSheetByName('erros');
     if (!aba) {
       aba = planilha.insertSheet('erros');

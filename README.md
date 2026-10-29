@@ -201,9 +201,11 @@ só se faz uma vez.
 · ID `1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U`
 
 > Sem colar o `Codigo.gs` **nessa** planilha e gerar uma implantação nova de app
-> da Web, o formulário **não** grava ali. A `webhookUrl` atual em `config.js`
-> pode apontar para outro Apps Script — só troque depois de ter a URL `/exec`
-> desta planilha. Não invente URL.
+> da Web com **Quem pode acessar: Qualquer pessoa**, o formulário **não** grava
+> ali. Diagnóstico curl: GET redireciona ao login Google e POST devolve **HTTP 401**
+> se a implantação não for pública — e o site ainda mostra sucesso (fetch `no-cors`).
+> O `Codigo.gs` usa `SpreadsheetApp.openById` com o ID acima: cole de novo e
+> **reimplante (Nova versão)** depois de qualquer alteração no script.
 
 **1. Abra a planilha acima** (conta Google com acesso de edição).
 
