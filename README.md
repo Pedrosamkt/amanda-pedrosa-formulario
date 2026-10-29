@@ -325,7 +325,9 @@ npm run deploy
 ```
 
 Na primeira vez, o Wrangler pede login na conta da Cloudflare (`npx wrangler login`).
-O endereço fica em `https://amanda-pedrosa.<sua-subconta>.workers.dev`.
+O endereço fica em `https://presente-live-delas.<sua-subconta>.workers.dev`.
+Depois de reivindicar a conta, dá para ligar o domínio `presente-live-delas`
+(ou o seu domínio próprio) em **Settings → Domains & Routes**.
 
 **Por que hospedar importa, além de ter um endereço:** a Cloudflare serve em
 `https://`, e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo

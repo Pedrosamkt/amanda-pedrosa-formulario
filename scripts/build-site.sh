@@ -4,6 +4,6 @@ set -eu
 cd "$(dirname "$0")/.."
 rm -rf public
 mkdir -p public
-cp index.html versao-escura.html politica-de-privacidade.html public/
+cp index.html politica-de-privacidade.html public/
 cp -r assets public/
 cp cloudflare/_headers public/_headers

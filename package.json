@@ -1,5 +1,5 @@
 {
-  "name": "amanda-pedrosa",
+  "name": "presente-live-delas",
   "private": true,
   "scripts": {
     "build": "bash scripts/build-site.sh",

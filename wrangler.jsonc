@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "amanda-pedrosa",
+  "name": "presente-live-delas",
   "compatibility_date": "2026-10-29",
   "observability": {
     "enabled": true,
