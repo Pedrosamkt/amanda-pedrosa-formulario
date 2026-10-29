@@ -27,18 +27,10 @@ const CONFIG = {
      Planilha alvo:
        https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit
        ID: 1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U
-     DIAGNÓSTICO (curl deste ambiente): GET → login Google; POST → HTTP 401
-     ("Sorry, unable to open the file"). A implantação atual NÃO está
-     pública — "Quem pode acessar" precisa ser Qualquer pessoa. Com
-     no-cors o site ainda mostra sucesso mesmo assim.
-
-     TODO (Amanda): abra ESSA planilha → Extensões → Apps Script → cole
-     planilha/Codigo.gs (já com openById) → Implantar → Nova implantação
-     (ou Gerenciar → editar → Nova versão) → app da Web
-     (Executar como: Eu · Quem pode acessar: Qualquer pessoa) → copie a
-     URL /exec e substitua abaixo se mudar. Sem redeploy público, o
-     formulário NÃO grava. */
-  webhookUrl: 'https://script.google.com/macros/s/AKfycby1-kT9xwm1ue_yhRZxQ8mRyJIUw_JUFVRGggR4TUDNi67jeclxU6jBC3qOIDNa4tnUfA/exec',
+     Implantação: App da Web · Executar como Eu · Quem pode acessar:
+     Qualquer pessoa. Sem isso, GET/POST voltam 401 e o no-cors do site
+     ainda mostra sucesso. Após mudar Codigo.gs: Nova versão. */
+  webhookUrl: 'https://script.google.com/macros/s/AKfycbzHBNu0xMx01Qdg6jINEyoroDCHyAJx3lYrIic8ISRVFEpgu5rIXl_zKFpIY9yQeHWvnw/exec',
 
   /* Quanto vale um lead pra você, em reais. Serve para a Meta otimizar
      por valor, não só por volume. Use a conta:
