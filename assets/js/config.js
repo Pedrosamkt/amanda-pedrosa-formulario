@@ -46,5 +46,5 @@ const CONFIG = {
   redirectOnSuccess: '',
 
   /* Abre o WhatsApp sozinho depois do envio. */
-  autoOpenWhatsapp: true,
+  autoOpenWhatsapp: false,
 };

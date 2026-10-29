@@ -49,7 +49,7 @@ const CONFIG = {
   valorLead: 0,                // ← quanto vale um lead, em reais
   testEventCode: '',           // ← só enquanto testa
   redirectOnSuccess: '',
-  autoOpenWhatsapp: true,
+  autoOpenWhatsapp: false,
 };
 ```
 
@@ -311,7 +311,7 @@ tem. Ordem de prioridade:
 |---|---|
 | `main.js` | seu número de WhatsApp |
 | `index.html` — rodapé | o seu @ do Instagram |
-| `index.html` — `<head>` | canonical/og já apontam para `https://presente-live-delas.dev/`; falta uma imagem `og.jpg` de 1200×630 |
+| `index.html` — `<head>` | canonical/og já apontam para `https://formulario-live-delas.io/`; falta uma imagem `og.jpg` de 1200×630 |
 | `politica-de-privacidade.html` | razão social, CNPJ, e-mail de contato e as ferramentas que você usa |
 | `versao-escura.html` — "Quem fala com você" | sua foto (`assets/img/amanda.jpg`, 800×1000) e os três parágrafos de bio |
 | `versao-escura.html` — "Prova social" | **está comentada no HTML.** Descomente e preencha com depoimentos reais de clientes que autorizaram. Não publique com texto de exemplo |
@@ -345,21 +345,21 @@ npm run deploy
 Na primeira vez, o Wrangler pede login na conta da Cloudflare (`npx wrangler login`).
 O endereço fica em `https://presente-live-delas.<sua-subconta>.workers.dev`.
 
-**Domínio pretendido:** `https://presente-live-delas.dev/`
+**Domínio pretendido:** `https://formulario-live-delas.io/`
 (as tags canonical/og do HTML já usam esse endereço).
 
-Para o `.dev` ficar no ar de verdade:
+Para o `.io` ficar no ar de verdade:
 
 1. Reivindique a conta temporária do Worker (link de claim do deploy) **ou**
    faça `npx wrangler login` na conta Cloudflare definitiva.
 2. No painel do Worker `presente-live-delas`: **Settings → Domains & Routes →
-   Add → Custom domain** → `presente-live-delas.dev`.
+   Add → Custom domain** → `formulario-live-delas.io`.
 3. No registrador do domínio, aponte o DNS para a Cloudflare (se o domínio ainda
-   não estiver nessa conta). Sem DNS + claim/login, `presente-live-delas.dev`
+   não estiver nessa conta). Sem DNS + claim/login, `formulario-live-delas.io`
    **não** resolve para este Worker.
 
 Deploy temporário (`wrangler deploy --temporary`) serve o site em
-`*.workers.dev`, mas **não** prende de forma permanente um domínio `.dev`
+`*.workers.dev`, mas **não** prende de forma permanente um domínio `.io`
 comprado até a conta ser reivindicada/logada e o domínio customizado adicionado.
 
 **Por que hospedar importa, além de ter um endereço:** a Cloudflare serve em
@@ -378,12 +378,12 @@ Não há Content-Security-Policy de propósito: com pixel, fontes e planilha na 
 uma CSP mal ajustada quebra a página em silêncio. Se quiser depois, dá para montar
 com calma e testar.
 
-### Domínio próprio (`presente-live-delas.dev`)
+### Domínio próprio (`formulario-live-delas.io`)
 
 1. No painel do Worker: **Settings → Domains & Routes → Add → Custom domain**.
-2. Digite `presente-live-delas.dev`. Se o DNS já está na Cloudflare dessa conta,
+2. Digite `formulario-live-delas.io`. Se o DNS já está na Cloudflare dessa conta,
    o registro e o HTTPS saem sozinhos.
-3. O HTML já aponta canonical/og para `https://presente-live-delas.dev/`.
+3. O HTML já aponta canonical/og para `https://formulario-live-delas.io/`.
 
 ### Vercel
 
