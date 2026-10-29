@@ -191,96 +191,224 @@
 
   <hr class="rule">
 
-  <p class="eyebrow" id="agendar">Solicitar meu diagnóstico</p>
-
-  <p>
-    Me conta o seu negócio, e eu te falo com honestidade se dá pra fazer pro seu caso.
-    Levo menos de um minuto do seu tempo aqui e te chamo no WhatsApp em até 1 dia útil.
-  </p>
-
+  <!-- Troque [presente] pelo nome do material da live. -->
   <form class="form" id="lead-form" novalidate>
+    <div class="gift__top" id="agendar">
+      <p class="gift__badge">
+        <svg viewBox="0 0 16 16" aria-hidden="true" fill="none">
+          <rect x="1.8" y="6.6" width="12.4" height="7.2" rx="1.2" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M1.8 9.2h12.4M8 6.6v7.2" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M8 6.6S6.2 2.8 4.6 3.6C3.4 4.2 4.2 6.6 8 6.6Zm0 0s1.8-3.8 3.4-3C12.6 4.2 11.8 6.6 8 6.6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+        Leva 2 minutos
+      </p>
+      <h2 class="gift__h">Garanta seu presente da live 🎁</h2>
+      <p class="gift__sub">
+        Preencha em 2 minutos e eu te envio [presente] no WhatsApp. Suas respostas
+        me ajudam a entender o momento da sua marca. Assim o material chega mais
+        útil para você.
+      </p>
+    </div>
+
+    <h3 class="sec">Seus dados</h3>
+
     <div class="field">
-      <label for="nome">Seu nome</label>
+      <label for="nome">Seu nome <span class="star" aria-hidden="true">*</span></label>
       <input id="nome" name="nome" type="text" autocomplete="name" required
-             placeholder="Nome e sobrenome">
-      <p class="err" data-err-for="nome"></p>
+             placeholder="Como você prefere ser chamado(a)" aria-describedby="err-nome">
+      <p class="err" id="err-nome" data-err-for="nome"></p>
     </div>
 
     <div class="field">
-      <label for="whatsapp">WhatsApp</label>
-      <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric"
-             autocomplete="tel" required placeholder="(00) 00000-0000" maxlength="16">
-      <p class="err" data-err-for="whatsapp"></p>
+      <label for="marca">Nome da sua marca <span class="star" aria-hidden="true">*</span></label>
+      <input id="marca" name="marca" type="text" autocomplete="organization" required
+             placeholder="O nome que o cliente conhece" aria-describedby="err-marca">
+      <p class="err" id="err-marca" data-err-for="marca"></p>
     </div>
 
     <div class="field">
-      <label for="negocio">Nome do negócio</label>
-      <input id="negocio" name="negocio" type="text" required
-             placeholder="Como o cliente te conhece">
-      <p class="err" data-err-for="negocio"></p>
+      <label for="whatsapp">WhatsApp com DDD <span class="star" aria-hidden="true">*</span></label>
+      <p class="hint">É por aqui que o presente chega.</p>
+      <div class="phone">
+        <span class="phone__cc"><span class="phone__br">BR</span> +55</span>
+        <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric"
+               autocomplete="tel" required placeholder="(11) 9XXXX-XXXX" maxlength="16"
+               aria-describedby="err-whatsapp">
+      </div>
+      <p class="err" id="err-whatsapp" data-err-for="whatsapp"></p>
     </div>
 
     <div class="field">
-      <label for="cidade">Cidade e bairro</label>
-      <input id="cidade" name="cidade" type="text" required
-             placeholder="Onde o negócio atende">
-      <p class="err" data-err-for="cidade"></p>
-    </div>
-
-    <div class="field">
-      <label for="segmento">Segmento</label>
-      <select id="segmento" name="segmento" required>
-        <option value="">Selecione</option>
-        <option>Estética e beleza</option>
-        <option>Odontologia</option>
-        <option>Saúde e clínicas</option>
-        <option>Academia, studio e bem-estar</option>
-        <option>Alimentação</option>
-        <option>Serviços (obra, automotivo, pet…)</option>
-        <option>Comércio e loja física</option>
-        <option>Outro</option>
+      <label for="segmento">Segmento <span class="star" aria-hidden="true">*</span></label>
+      <select id="segmento" name="segmento" required aria-describedby="err-segmento">
+        <option value="">Selecione...</option>
+        <option value="Moda">Moda</option>
+        <option value="Beleza e estética">Beleza e estética</option>
+        <option value="Alimentação">Alimentação</option>
+        <option value="Saúde">Saúde</option>
+        <option value="Serviços">Serviços</option>
+        <option value="Móveis e decoração">Móveis e decoração</option>
+        <option value="Infoproduto">Infoproduto</option>
+        <option value="outro">Outro</option>
       </select>
-      <p class="err" data-err-for="segmento"></p>
+      <p class="err" id="err-segmento" data-err-for="segmento"></p>
+    </div>
+
+    <div class="field" id="campo-segmento-outro" hidden>
+      <label for="segmento-outro">Qual? <span class="star" aria-hidden="true">*</span></label>
+      <input id="segmento-outro" name="segmento_outro" type="text"
+             placeholder="Conta o segmento" aria-describedby="err-segmento-outro">
+      <p class="err" id="err-segmento-outro" data-err-for="segmento_outro"></p>
+    </div>
+
+    <h3 class="sec">Sua marca hoje</h3>
+
+    <div class="field">
+      <p class="lbl" id="fase-lbl">Em que fase a sua marca está? <span class="star" aria-hidden="true">*</span></p>
+      <div class="choices" role="radiogroup" aria-labelledby="fase-lbl" aria-describedby="err-fase">
+        <label class="choice">
+          <input type="radio" name="fase" value="Estou começando do zero ou ainda não vendo com regularidade">
+          <span>Estou começando do zero ou ainda não vendo com regularidade</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="fase" value="Já vendo com regularidade e tenho alguma estrutura">
+          <span>Já vendo com regularidade e tenho alguma estrutura</span>
+        </label>
+      </div>
+      <p class="err" id="err-fase" data-err-for="fase"></p>
     </div>
 
     <div class="field">
-      <label for="faturamento">Faturamento médio por mês</label>
-      <select id="faturamento" name="faturamento" required>
-        <option value="">Selecione</option>
-        <option>Até R$ 10 mil</option>
-        <option>R$ 10 mil a R$ 30 mil</option>
-        <option>R$ 30 mil a R$ 100 mil</option>
-        <option>Acima de R$ 100 mil</option>
-        <option>Prefiro falar na conversa</option>
+      <label for="produto">O que você vende? <span class="star" aria-hidden="true">*</span></label>
+      <p class="hint">Qual é o seu produto ou serviço principal?</p>
+      <input id="produto" name="produto" type="text" required
+             placeholder="Resposta curta" aria-describedby="err-produto">
+      <p class="err" id="err-produto" data-err-for="produto"></p>
+    </div>
+
+    <div class="field">
+      <label for="ticket">Qual é o seu ticket médio? <span class="star" aria-hidden="true">*</span></label>
+      <select id="ticket" name="ticket" required aria-describedby="err-ticket">
+        <option value="">Selecione...</option>
+        <option>Até R$ 100</option>
+        <option>R$ 100 a R$ 500</option>
+        <option>R$ 500 a R$ 2.000</option>
+        <option>Acima de R$ 2.000</option>
       </select>
-      <p class="err" data-err-for="faturamento"></p>
+      <p class="err" id="err-ticket" data-err-for="ticket"></p>
     </div>
 
     <div class="field">
-      <label for="investimento">Quanto você investe em anúncio hoje</label>
-      <select id="investimento" name="investimento" required>
-        <option value="">Selecione</option>
-        <option>Ainda não invisto</option>
-        <option>Até R$ 1.000 por mês</option>
-        <option>R$ 1.000 a R$ 3.000 por mês</option>
-        <option>R$ 3.000 a R$ 10.000 por mês</option>
-        <option>Acima de R$ 10.000 por mês</option>
+      <p class="lbl" id="canais-lbl">Por onde os clientes chegam hoje? <span class="star" aria-hidden="true">*</span></p>
+      <p class="hint">Marque quantos quiser.</p>
+      <div class="chips" role="group" aria-labelledby="canais-lbl" aria-describedby="err-canais">
+        <label class="chip"><input type="checkbox" name="canais" value="Instagram orgânico"> Instagram orgânico</label>
+        <label class="chip"><input type="checkbox" name="canais" value="Indicação"> Indicação</label>
+        <label class="chip"><input type="checkbox" name="canais" value="Anúncios"> Anúncios</label>
+        <label class="chip"><input type="checkbox" name="canais" value="Google"> Google</label>
+        <label class="chip"><input type="checkbox" name="canais" value="Loja física"> Loja física</label>
+        <label class="chip"><input type="checkbox" name="canais" value="Marketplace"> Marketplace</label>
+        <label class="chip"><input type="checkbox" name="canais" value="outro"> Outro</label>
+      </div>
+      <p class="err" id="err-canais" data-err-for="canais"></p>
+    </div>
+
+    <div class="field" id="campo-canais-outro" hidden>
+      <label for="canais-outro">Outro, qual? <span class="star" aria-hidden="true">*</span></label>
+      <input id="canais-outro" name="canais_outro" type="text"
+             placeholder="Por onde mais eles chegam" aria-describedby="err-canais-outro">
+      <p class="err" id="err-canais-outro" data-err-for="canais_outro"></p>
+    </div>
+
+    <h3 class="sec">Anúncios</h3>
+
+    <div class="field">
+      <label for="anuncios">Você já investiu em anúncios? <span class="star" aria-hidden="true">*</span></label>
+      <select id="anuncios" name="anuncios" required aria-describedby="err-anuncios">
+        <option value="">Selecione...</option>
+        <option>Sim, invisto hoje</option>
+        <option>Já investi, mas parei</option>
+        <option>Nunca investi</option>
       </select>
-      <p class="err" data-err-for="investimento"></p>
+      <p class="err" id="err-anuncios" data-err-for="anuncios"></p>
+    </div>
+
+    <div class="field" id="campo-resultado" hidden>
+      <label for="resultado">Quanto por mês e qual foi o resultado? <span class="star" aria-hidden="true">*</span></label>
+      <textarea id="resultado" name="resultado" rows="3"
+                placeholder="Ex.: R$ 1.500 por mês, vinha pedido pelo Instagram"
+                aria-describedby="err-resultado"></textarea>
+      <p class="err" id="err-resultado" data-err-for="resultado"></p>
+    </div>
+
+    <h3 class="sec">Operação</h3>
+
+    <div class="field">
+      <label for="redes">Quem cuida das redes sociais hoje? <span class="star" aria-hidden="true">*</span></label>
+      <select id="redes" name="redes" required aria-describedby="err-redes">
+        <option value="">Selecione...</option>
+        <option>Eu mesma(o)</option>
+        <option>Alguém da equipe</option>
+        <option>Agência ou freelancer</option>
+        <option>Ninguém</option>
+      </select>
+      <p class="err" id="err-redes" data-err-for="redes"></p>
     </div>
 
     <div class="field">
-      <label for="gargalo">Qual é o maior gargalo hoje?</label>
-      <textarea id="gargalo" name="gargalo" rows="3"
-                placeholder="Escreve do seu jeito. Duas linhas bastam."></textarea>
+      <label for="atendimento">Por onde é o atendimento e quem responde os clientes? <span class="star" aria-hidden="true">*</span></label>
+      <input id="atendimento" name="atendimento" type="text" required
+             placeholder="Ex.: WhatsApp, eu respondo" aria-describedby="err-atendimento">
+      <p class="err" id="err-atendimento" data-err-for="atendimento"></p>
+    </div>
+
+    <div class="field">
+      <label for="gargalo">Qual é o maior gargalo hoje? <span class="star" aria-hidden="true">*</span></label>
+      <select id="gargalo" name="gargalo" required aria-describedby="err-gargalo">
+        <option value="">Selecione...</option>
+        <option>Poucos clientes chegando</option>
+        <option>Chegam, mas não compram</option>
+        <option>Não sei de onde vêm as vendas</option>
+        <option>Falta tempo para postar e anunciar</option>
+        <option value="outro">Outro</option>
+      </select>
+      <p class="err" id="err-gargalo" data-err-for="gargalo"></p>
+    </div>
+
+    <div class="field" id="campo-gargalo-outro" hidden>
+      <label for="gargalo-outro">Qual? <span class="star" aria-hidden="true">*</span></label>
+      <input id="gargalo-outro" name="gargalo_outro" type="text"
+             placeholder="Conta o gargalo" aria-describedby="err-gargalo-outro">
+      <p class="err" id="err-gargalo-outro" data-err-for="gargalo_outro"></p>
+    </div>
+
+    <h3 class="sec">Próximo passo</h3>
+
+    <div class="field">
+      <p class="lbl" id="proximo-lbl">Você pensa em contratar ajuda com comunicação ou anúncios? <span class="star" aria-hidden="true">*</span></p>
+      <div class="choices" role="radiogroup" aria-labelledby="proximo-lbl" aria-describedby="err-proximo">
+        <label class="choice">
+          <input type="radio" name="proximo" value="Sim, agora">
+          <span>Sim, agora</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="proximo" value="Nos próximos 3 meses">
+          <span>Nos próximos 3 meses</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="proximo" value="Só quero entender melhor por enquanto">
+          <span>Só quero entender melhor por enquanto</span>
+        </label>
+      </div>
+      <p class="err" id="err-proximo" data-err-for="proximo"></p>
     </div>
 
     <div class="field check">
-      <input id="consent" name="consent" type="checkbox" required>
+      <input id="consent" name="consent" type="checkbox" required aria-describedby="err-consent">
       <label for="consent">
-        Autorizo o contato pelo WhatsApp e o uso dos meus dados para essa conversa.
+        Autorizo o contato pelo WhatsApp e o uso dos meus dados para enviar o presente.
       </label>
-      <p class="err" data-err-for="consent"></p>
+      <p class="err" id="err-consent" data-err-for="consent"></p>
     </div>
 
     <!-- De onde a pessoa veio. Preenchido sozinho pelo tracking.js: é isso que
@@ -292,24 +420,18 @@
     <input type="hidden" name="external_id"><input type="hidden" name="referrer">
     <input type="hidden" name="pagina">
 
-    <button class="btn" type="submit" id="submit-btn">Solicitar meu diagnóstico</button>
+    <button class="btn" type="submit" id="submit-btn">Quero meu presente <span class="btn__arrow" aria-hidden="true">→</span></button>
     <p class="form__fine">
-      Ao enviar, seus dados são tratados conforme a
-      <a href="politica-de-privacidade.html">política de privacidade</a>.
+      Seus dados são tratados com segurança e usados só pra te enviar o presente
+      e entender o momento da sua marca.
+      <a href="politica-de-privacidade.html">Política de privacidade</a>.
     </p>
     <p class="form__status" id="form-status" role="status" aria-live="polite"></p>
   </form>
 
   <div class="done" id="done" hidden>
-    <p class="done__t">Recebido, <span id="done-nome">tudo certo</span>.</p>
-    <p>
-      Já está comigo. Eu te chamo no WhatsApp em até 1 dia útil com dois horários
-      pra conversa.
-    </p>
-    <a class="wpp" id="done-wpp" href="#" target="_blank" rel="noopener">
-      <svg class="wpp__i" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05s.88 2.38 1 2.54c.12.17 1.73 2.64 4.2 3.7.59.26 1.04.41 1.4.52.59.19 1.12.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
-      Falar com a Amanda no WhatsApp
-    </a>
+    <p class="done__t">Pronto, <span id="done-nome">tudo certo</span>! 🎉</p>
+    <p class="done__p">Iremos entrar em contato pelo WhatsApp. Fica de olho!</p>
   </div>
 
   <p class="alt" id="alt-wpp">

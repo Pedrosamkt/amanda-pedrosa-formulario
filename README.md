@@ -125,8 +125,9 @@ Por isso o caminho é: página → seu webhook → Meta.
 ```json
 {
   "nome": "Joana Ribeiro", "whatsapp": "(62) 98765-4321",
-  "negocio": "…", "cidade": "…", "segmento": "…",
-  "faturamento": "…", "investimento": "…", "gargalo": "…",
+  "marca": "…", "segmento": "…", "fase": "…", "produto": "…",
+  "ticket": "…", "canais": "…", "anuncios": "…", "resultado": "…",
+  "redes": "…", "atendimento": "…", "gargalo": "…", "proximo": "…",
   "consent": true, "enviado_em": "2026-08-08T14:02:11.000Z",
   "utm_source": "ig", "utm_campaign": "diag_ago", "utm_content": "criativo_3",
   "fbclid": "…", "fbc": "…", "fbp": "…", "event_id": "…",
@@ -142,7 +143,7 @@ Por isso o caminho é: página → seu webhook → Meta.
       "ct": "472c438f…", "country": "885036a0…", "external_id": "0af17234…",
       "fbc": "fb.1.…", "fbp": "fb.1.…", "client_user_agent": "…"
     },
-    "custom_data": { "content_name": "Diagnóstico de tráfego", "content_category": "…" }
+    "custom_data": { "content_name": "Presente da live", "content_category": "…" }
   }
 }
 ```
@@ -255,10 +256,11 @@ vale trocar para o n8n.
 Uma aba **leads**, uma linha por envio:
 
 ```
-Data · Nome · WhatsApp · Negócio · Cidade · Segmento · Faturamento ·
-Investe hoje · Maior gargalo · Origem · Mídia · Campanha · Criativo ·
-Palavra-chave · Veio de · Página · Clique do anúncio · Aceite ·
-Enviado à Meta · ID do evento · ID do visitante
+Data · Nome · WhatsApp · Marca · Segmento · Fase · O que vende ·
+Ticket médio · Canais · Anúncios · Resultado dos anúncios · Redes sociais ·
+Atendimento · Gargalo · Próximo passo · Cidade · Faturamento · Investe hoje ·
+Origem · Mídia · Campanha · Criativo · Palavra-chave · Veio de · Página ·
+Clique do anúncio · Aceite · Enviado à Meta · ID do evento · ID do visitante
 ```
 
 Com isso, uma tabela dinâmica por **Criativo** já te diz qual anúncio traz lead e
