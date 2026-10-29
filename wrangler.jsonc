@@ -2,6 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "presente-live-delas",
   "compatibility_date": "2026-10-29",
+  "workers_dev": true,
   "observability": {
     "enabled": true,
     "logs": {

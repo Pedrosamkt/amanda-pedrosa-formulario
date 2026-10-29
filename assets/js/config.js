@@ -33,7 +33,7 @@ const CONFIG = {
      URL que termina em /exec e substitua o valor abaixo. Sem esse deploy
      NOVO nesta planilha, o formulário NÃO grava nessa sheet. A URL
      atual pode apontar para outro Apps Script / outra planilha. */
-  webhookUrl: 'https://script.google.com/macros/s/AKfycbzo-e3Oc4MbKF-VsrDBU8bNHfpK-1NLGPD34aqxQlP8cPheDNkPqcBQ8XgmSDXtv8hZPg/exec',
+  webhookUrl: 'https://script.google.com/macros/s/AKfycby1-kT9xwm1ue_yhRZxQ8mRyJIUw_JUFVRGggR4TUDNi67jeclxU6jBC3qOIDNa4tnUfA/exec',
 
   /* Quanto vale um lead pra você, em reais. Serve para a Meta otimizar
      por valor, não só por volume. Use a conta:
