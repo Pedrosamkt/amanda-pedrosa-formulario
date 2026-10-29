@@ -28,7 +28,7 @@ const COLUNAS = [
   ['Data',            (d) => Utilities.formatDate(new Date(), FUSO, 'dd/MM/yyyy HH:mm')],
   ['Nome',            (d) => d.nome],
   ['WhatsApp',        (d) => d.whatsapp],
-  ['Marca',           (d) => d.marca || d.negocio],
+  ['Instagram',       (d) => d.instagram || d.marca || d.negocio],
   ['Segmento',        (d) => d.segmento],
   ['Fase',            (d) => d.fase],
   ['O que vende',     (d) => d.produto],
@@ -218,7 +218,7 @@ function testarComLeadFalso() {
       contents: JSON.stringify({
         nome: 'Lead de teste',
         whatsapp: '(62) 90000-0000',
-        marca: 'Marca teste',
+        instagram: '@marca.teste',
         segmento: 'Moda',
         fase: 'Já vendo com regularidade e tenho alguma estrutura',
         produto: 'Vestido sob medida',

@@ -31,7 +31,8 @@
   const direct = $('#wpp-direct');
   if (direct) {
     if (numberReady()) {
-      const presente = document.querySelector('#lead-form [name="marca"]');
+      const presente = document.querySelector('#lead-form [name="instagram"]')
+        || document.body.classList.contains('page-form');
       const oi = presente
         ? 'Oi, Amanda. Vim pela página e quero o presente da live.'
         : 'Oi, Amanda. Vim pela página do diagnóstico e queria conversar.';
@@ -94,7 +95,8 @@
   });
 
   /* A carta pede o presente da live. A versão escura continua no diagnóstico. */
-  const isGift = () => Boolean(form.elements.marca);
+  const isGift = () => Boolean(form.elements.instagram)
+    || document.body.classList.contains('page-form');
   const INVESTIU = ['Sim, invisto hoje', 'Já investi, mas parei'];
 
   const control = (name) => {
@@ -123,7 +125,10 @@
 
   const GIFT_RULES = {
     nome:        (v) => v.trim().length >= 2 || 'Escreve seu nome.',
-    marca:       (v) => v.trim().length >= 2 || 'Qual é o nome da sua marca?',
+    instagram:   (v) => {
+      const handle = v.trim().replace(/^@+/, '');
+      return handle.length >= 2 || 'Qual é o @ do Instagram da marca?';
+    },
     whatsapp:    (v) => v.replace(/\D/g, '').length >= 10 || 'Falta um número com DDD.',
     segmento:    (v) => v !== '' || 'Escolhe um segmento.',
     fase:        (v) => v !== '' || 'Escolhe a fase da sua marca.',
@@ -278,7 +283,7 @@
           'Oi, Amanda. Quero meu presente da live.',
           '',
           `Nome: ${d.nome}`,
-          `Marca: ${d.marca}`,
+          `Instagram: ${d.instagram}`,
           `WhatsApp: ${d.whatsapp}`,
           `Segmento: ${d.segmento}`,
           `Fase: ${d.fase}`,

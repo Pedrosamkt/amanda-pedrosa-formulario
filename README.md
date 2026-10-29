@@ -125,7 +125,7 @@ Por isso o caminho é: página → seu webhook → Meta.
 ```json
 {
   "nome": "Joana Ribeiro", "whatsapp": "(62) 98765-4321",
-  "marca": "…", "segmento": "…", "fase": "…", "produto": "…",
+  "instagram": "…", "segmento": "…", "fase": "…", "produto": "…",
   "ticket": "…", "canais": "…", "anuncios": "…", "resultado": "…",
   "redes": "…", "atendimento": "…", "gargalo": "…", "proximo": "…",
   "consent": true, "enviado_em": "2026-08-08T14:02:11.000Z",
@@ -256,7 +256,7 @@ vale trocar para o n8n.
 Uma aba **leads**, uma linha por envio:
 
 ```
-Data · Nome · WhatsApp · Marca · Segmento · Fase · O que vende ·
+Data · Nome · WhatsApp · Instagram · Segmento · Fase · O que vende ·
 Ticket médio · Canais · Anúncios · Resultado dos anúncios · Redes sociais ·
 Atendimento · Gargalo · Próximo passo · Cidade · Faturamento · Investe hoje ·
 Origem · Mídia · Campanha · Criativo · Palavra-chave · Veio de · Página ·
