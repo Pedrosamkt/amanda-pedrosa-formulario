@@ -48,14 +48,6 @@ body.page-form{
     linear-gradient(180deg, #F4FAF7 0%, #EEF3F1 48%, #E8EEF0 100%);
 }
 
-/* página só do formulário */
-body.gift-page{
-  min-height:100vh;
-  background:
-    radial-gradient(120% 80% at 50% -10%, #E8FBF3 0%, transparent 55%),
-    linear-gradient(180deg, #F4F7F6 0%, #EEF1F0 100%);
-}
-
 :focus-visible{ outline:2px solid var(--ink); outline-offset:2px; border-radius:3px; }
 
 ::selection{ background:var(--mark); color:var(--ink); }
@@ -74,11 +66,6 @@ body.gift-page{
 .page-form .form,
 .page-form .done{
   margin:0;
-}
-
-.pg--gift{
-  max-width:560px;
-  padding:28px 16px 48px;
 }
 
 p{ margin:0 0 20px; }
@@ -563,7 +550,7 @@ mark{
 @media (min-width:640px){
   body{ font-size:17.5px; }
   .pg{ padding:64px 24px 80px; }
-  .pg--gift{ padding:40px 24px 64px; }
+  .pg--form{ padding:48px 24px 72px; }
   .h1{ font-size:27px; }
   .form, .done{ padding:32px 28px 26px; }
   .gift__h{ font-size:24px; }
