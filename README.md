@@ -362,6 +362,48 @@ Deploy temporário (`wrangler deploy --temporary`) serve o site em
 `*.workers.dev`, mas **não** prende de forma permanente um domínio `.io`
 comprado até a conta ser reivindicada/logada e o domínio customizado adicionado.
 
+### Tela “Verify you are human” / “Just a moment…” (desafio da Cloudflare)
+
+**O que está acontecendo:** o link preview temporário
+(`https://presente-live-delas.loud-jujube.workers.dev` e similares) passa por uma
+conta Cloudflare de *preview* (`wrangler deploy --temporary`). Nessas contas a
+Cloudflare aplica **Managed Challenge** em toda visita: resposta `403` com
+cabeçalho `cf-mitigated: challenge` e a página “Just a moment…” / “Verify you
+are human”. Isso **não** vem do HTML do formulário nem de configuração no
+repositório.
+
+**O que não dá para fazer daqui:**
+- `wrangler whoami` → não autenticado (só conta temporária).
+- Conta preview **não tem zonas** próprias → não há Security Level, Bot Fight
+  Mode nem regra WAF para desligar o desafio via API/painel nessa URL.
+- **Redeploy** (`--temporary` de novo) **não remove** o desafio; só gera outro
+  preview com o mesmo tipo de proteção.
+- Sem login permanente / claim da conta, o desafio **não pode** ser desligado.
+
+**Como tirar de verdade (escolha uma):**
+
+1. **Reivindicar a conta preview** (link de claim que o Wrangler imprime,
+   válido ~60 min) **ou**
+2. Na sua máquina: `npx wrangler login` → `npm run deploy` **sem**
+   `--temporary` (conta Cloudflare definitiva).
+
+Depois disso, se ainda aparecer desafio no **domínio próprio**
+(`formulario-live-delas.io` já na conta):
+
+1. Abra [dash.cloudflare.com](https://dash.cloudflare.com) e entre na conta.
+2. Selecione o **domínio** (zona) do site.
+3. **Security → Settings**.
+4. Em **Bot traffic** → **Bot Fight Mode** → **Off**.
+5. Em **Security level** (ou equivalente) → **Essentially Off** ou **Medium**
+   (não Under Attack).
+6. Se sobrar desafio em rota específica: **Security → Security rules** →
+   regra Skip / Allow para aquele hostname (só funciona onde Bot Fight Mode
+   não estiver forçando o desafio).
+
+Em `*.workers.dev` de conta permanente o desafio agressivo de preview costuma
+sumir sozinho após claim/login + deploy; o ajuste fino acima vale sobretudo
+para o domínio `.io`.
+
 **Por que hospedar importa, além de ter um endereço:** a Cloudflare serve em
 `https://`, e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo
 o arquivo direto do computador, os hashes saem vazios e o pareamento com a Meta piora.
