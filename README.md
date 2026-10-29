@@ -27,7 +27,7 @@ assets/js/config.js            ← O ÚNICO ARQUIVO QUE VOCÊ EDITA
 assets/js/tracking.js          pixel, cookies e evento pronto pra Conversions API
 assets/js/main.js              formulário, máscara, validação e envio
 
-planilha/Codigo.gs             script que grava os leads na planilha "forms site"
+planilha/Codigo.gs             script que grava os leads na planilha do presente da live
 
 assets/css/carta.css           estilo da carta
 assets/css/style.css           estilo da versão escura
@@ -49,7 +49,7 @@ const CONFIG = {
   valorLead: 0,                // ← quanto vale um lead, em reais
   testEventCode: '',           // ← só enquanto testa
   redirectOnSuccess: '',
-  autoOpenWhatsapp: true,
+  autoOpenWhatsapp: false,
 };
 ```
 
@@ -64,9 +64,12 @@ guardada num cookie do seu próprio domínio, para não se perder se você ligar
 depois.
 
 **`webhookUrl`** — para onde o lead vai além do WhatsApp. O caminho mais simples é a
-planilha do Google (seção 4); também aceita Make, Zapier, n8n ou o seu CRM. É por
-aqui que a Conversions API é alimentada (seção 3). Se ficar vazio, nada se perde —
-o lead continua chegando pelo WhatsApp com todas as respostas escritas na mensagem.
+planilha do presente da live (seção 4 —
+ID `1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U`); também aceita Make, Zapier,
+n8n ou o seu CRM. É por aqui que a Conversions API é alimentada (seção 3). Se
+ficar vazio, nada se perde — o lead continua chegando pelo WhatsApp com todas as
+respostas escritas na mensagem. **Só cole a URL `/exec` depois de implantar o
+Apps Script nessa planilha.**
 
 **`valorLead`** — quanto vale um lead pra você. Com esse número, a Meta otimiza por
 valor e não só por volume. A conta é a mesma do diagnóstico:
@@ -125,8 +128,9 @@ Por isso o caminho é: página → seu webhook → Meta.
 ```json
 {
   "nome": "Joana Ribeiro", "whatsapp": "(62) 98765-4321",
-  "negocio": "…", "cidade": "…", "segmento": "…",
-  "faturamento": "…", "investimento": "…", "gargalo": "…",
+  "instagram": "…", "segmento": "…", "fase": "…", "produto": "…",
+  "ticket": "…", "canais": "…", "anuncios": "…", "resultado": "…",
+  "redes": "…", "atendimento": "…", "gargalo": "…", "proximo": "…",
   "consent": true, "enviado_em": "2026-08-08T14:02:11.000Z",
   "utm_source": "ig", "utm_campaign": "diag_ago", "utm_content": "criativo_3",
   "fbclid": "…", "fbc": "…", "fbp": "…", "event_id": "…",
@@ -142,7 +146,7 @@ Por isso o caminho é: página → seu webhook → Meta.
       "ct": "472c438f…", "country": "885036a0…", "external_id": "0af17234…",
       "fbc": "fb.1.…", "fbp": "fb.1.…", "client_user_agent": "…"
     },
-    "custom_data": { "content_name": "Diagnóstico de tráfego", "content_category": "…" }
+    "custom_data": { "content_name": "Presente da live", "content_category": "…" }
   }
 }
 ```
@@ -186,17 +190,27 @@ Se aparecerem separados, o `event_id` não está sendo repassado.
 
 ---
 
-## 4. Mandar os leads para a planilha "forms site"
+## 4. Mandar os leads para a planilha do presente da live
 
-O caminho mais curto e sem mensalidade: um script dentro da própria planilha
+O caminho mais curto e sem mensalidade: um script **dentro desta planilha**
 recebe os envios e escreve as linhas. Sem Make, sem Zapier. Leva uns 10 minutos e
 só se faz uma vez.
 
-**1. Crie a planilha.** No Google Drive, nova planilha, nome **`forms site`**.
-Não precisa criar aba nem cabeçalho — o script faz isso sozinho no primeiro lead.
+**Planilha alvo (já criada):**
+[Abrir no Google Sheets](https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit?gid=0#gid=0)
+· ID `1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U`
 
-**2. Cole o script.** Dentro da planilha: menu **Extensões → Apps Script**. Apague
-o `function myFunction() {}` que vem lá e cole o conteúdo de
+> Sem colar o `Codigo.gs` **nessa** planilha e gerar uma implantação nova de app
+> da Web com **Quem pode acessar: Qualquer pessoa**, o formulário **não** grava
+> ali. Diagnóstico curl: GET redireciona ao login Google e POST devolve **HTTP 401**
+> se a implantação não for pública — e o site ainda mostra sucesso (fetch `no-cors`).
+> O `Codigo.gs` usa `SpreadsheetApp.openById` com o ID acima: cole de novo e
+> **reimplante (Nova versão)** depois de qualquer alteração no script.
+
+**1. Abra a planilha acima** (conta Google com acesso de edição).
+
+**2. Cole o script.** Menu **Extensões → Apps Script**. Apague o
+`function myFunction() {}` que vem lá e cole o conteúdo de
 [`planilha/Codigo.gs`](planilha/Codigo.gs). Salve (💾).
 
 **3. Teste antes de publicar.** No editor, escolha a função `testarComLeadFalso` e
@@ -217,16 +231,21 @@ preencheu o formulário, e essa pessoa não tem conta na sua planilha. O script 
 sabe escrever linha — não lê e não devolve nada.
 
 **5. Ligue na página.** Copie a URL da implantação (termina em `/exec`) e cole em
-`webhookUrl`, no `config.js`:
+`webhookUrl`, no `config.js` (substituindo o valor antigo):
 
 ```js
 webhookUrl: 'https://script.google.com/macros/s/AKfycb.../exec',
 ```
 
-Pronto. Preencha o formulário na página e a linha aparece na planilha.
+Depois faça commit/deploy da página com a URL nova. Pronto: o próximo envio do
+formulário aparece na aba **leads** dessa planilha.
 
 **Se mudar o `Codigo.gs` depois**, é preciso **Implantar → Gerenciar implantações →
 ✏️ → Versão: Nova versão**. Sem isso o Google continua rodando a versão antiga.
+
+Se a aba `leads` já tiver linhas no formato antigo, **renomeie** essa aba antes
+de rodar o script de novo — reescrever o cabeçalho não realinha as respostas
+antigas.
 
 ### Bônus: a Conversions API sem Make nem Zapier
 
@@ -255,10 +274,11 @@ vale trocar para o n8n.
 Uma aba **leads**, uma linha por envio:
 
 ```
-Data · Nome · WhatsApp · Negócio · Cidade · Segmento · Faturamento ·
-Investe hoje · Maior gargalo · Origem · Mídia · Campanha · Criativo ·
-Palavra-chave · Veio de · Página · Clique do anúncio · Aceite ·
-Enviado à Meta · ID do evento · ID do visitante
+Data · Nome · WhatsApp · Instagram · Segmento · Fase · O que vende ·
+Ticket médio · Canais · Anúncios · Resultado dos anúncios · Redes sociais ·
+Atendimento · Gargalo · Próximo passo · Cidade · Faturamento · Investe hoje ·
+Origem · Mídia · Campanha · Criativo · Palavra-chave · Veio de · Página ·
+Clique do anúncio · Aceite · Enviado à Meta · ID do evento · ID do visitante
 ```
 
 Com isso, uma tabela dinâmica por **Criativo** já te diz qual anúncio traz lead e
@@ -291,7 +311,7 @@ tem. Ordem de prioridade:
 |---|---|
 | `main.js` | seu número de WhatsApp |
 | `index.html` — rodapé | o seu @ do Instagram |
-| `index.html` — `<head>` | `SEU-DOMINIO.com.br` nas tags de canonical e compartilhamento, e uma imagem `og.jpg` de 1200×630 |
+| `index.html` — `<head>` | canonical/og já apontam para `https://formulario-live-delas.io/`; falta uma imagem `og.jpg` de 1200×630 |
 | `politica-de-privacidade.html` | razão social, CNPJ, e-mail de contato e as ferramentas que você usa |
 | `versao-escura.html` — "Quem fala com você" | sua foto (`assets/img/amanda.jpg`, 800×1000) e os três parágrafos de bio |
 | `versao-escura.html` — "Prova social" | **está comentada no HTML.** Descomente e preencha com depoimentos reais de clientes que autorizaram. Não publique com texto de exemplo |
@@ -310,52 +330,89 @@ verdade antes de subir, ou troque:
 
 ---
 
-## 7. Publicar na Vercel
+## 7. Publicar na Cloudflare
 
-O [`vercel.json`](vercel.json) já está pronto: monta o site, define o cache e liga
-os cabeçalhos de segurança. **Você não precisa configurar nada no painel** — a
-Vercel lê esse arquivo.
-
-**1.** Entre em [vercel.com](https://vercel.com) e crie a conta com **Continue with
-GitHub**. Autorize o acesso ao repositório `amanda-pedrosa-formulario`.
-
-**2.** No painel: **Add New → Project → Import** no repositório.
-
-**3.** Na tela de importação, **mude só uma coisa**: em *Branch*, escolha
-`claude/capture-page-ted-sonsantos-o1kzm2`. O repositório não tem `main`, e a Vercel
-sugere ela por padrão. Todo o resto (framework, build command, output directory)
-deixe **como está** — vem do `vercel.json`.
-
-**4.** Clique em **Deploy** e espere. Em cerca de um minuto sai o endereço:
+O site sobe como [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/):
+HTML, CSS e JavaScript servidos na rede da Cloudflare, sem servidor. O
+[`wrangler.jsonc`](wrangler.jsonc) aponta para a pasta `public`, que o build monta.
+README, planilha e este arquivo não vão ao ar.
 
 ```
-https://amanda-pedrosa-formulario.vercel.app
+npm install
+npm run deploy
 ```
 
-A partir daí, todo commit nessa branch republica o site sozinho.
+Na primeira vez, o Wrangler pede login na conta da Cloudflare (`npx wrangler login`).
+O endereço fica em `https://presente-live-delas.<sua-subconta>.workers.dev`.
 
-O que vai ao ar é só o que o navegador precisa — as duas páginas, a política de
-privacidade e a pasta `assets`. O README e o script da planilha continuam no
-repositório, mas fora do ar.
+**Domínio pretendido:** `https://formulario-live-delas.io/`
+(as tags canonical/og do HTML já usam esse endereço).
 
-**Por que hospedar importa, além de ter um endereço:** a Vercel serve em `https://`,
-e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo o arquivo
-direto do computador, os hashes saem vazios e o pareamento com a Meta piora.
+Para o `.io` ficar no ar de verdade:
 
-### Domínio próprio
+1. Reivindique a conta temporária do Worker (link de claim do deploy) **ou**
+   faça `npx wrangler login` na conta Cloudflare definitiva.
+2. No painel do Worker `presente-live-delas`: **Settings → Domains & Routes →
+   Add → Custom domain** → `formulario-live-delas.io`.
+3. No registrador do domínio, aponte o DNS para a Cloudflare (se o domínio ainda
+   não estiver nessa conta). Sem DNS + claim/login, `formulario-live-delas.io`
+   **não** resolve para este Worker.
 
-1. No projeto: **Settings → Domains → Add**, escreva o seu domínio.
-2. A Vercel mostra o registro de DNS para criar no painel do seu domínio —
-   normalmente um `CNAME` de `www` apontando para `cname.vercel-dns.com`.
-3. O certificado HTTPS sai sozinho depois da propagação.
-4. Volte no `index.html` e troque `SEU-DOMINIO.com.br` nas tags de canonical e de
-   compartilhamento.
+Deploy temporário (`wrangler deploy --temporary`) serve o site em
+`*.workers.dev`, mas **não** prende de forma permanente um domínio `.io`
+comprado até a conta ser reivindicada/logada e o domínio customizado adicionado.
 
-### O que o `vercel.json` já resolve
+### Tela “Verify you are human” / “Just a moment…” (desafio da Cloudflare)
 
-- **Monta o site** com apenas os arquivos públicos, numa pasta `public`.
-- **Cache:** HTML sempre revalidado (uma correção de texto aparece na hora), `assets`
-  guardados por 1 hora.
+**O que está acontecendo:** o link preview temporário
+(`https://presente-live-delas.loud-jujube.workers.dev` e similares) passa por uma
+conta Cloudflare de *preview* (`wrangler deploy --temporary`). Nessas contas a
+Cloudflare aplica **Managed Challenge** em toda visita: resposta `403` com
+cabeçalho `cf-mitigated: challenge` e a página “Just a moment…” / “Verify you
+are human”. Isso **não** vem do HTML do formulário nem de configuração no
+repositório.
+
+**O que não dá para fazer daqui:**
+- `wrangler whoami` → não autenticado (só conta temporária).
+- Conta preview **não tem zonas** próprias → não há Security Level, Bot Fight
+  Mode nem regra WAF para desligar o desafio via API/painel nessa URL.
+- **Redeploy** (`--temporary` de novo) **não remove** o desafio; só gera outro
+  preview com o mesmo tipo de proteção.
+- Sem login permanente / claim da conta, o desafio **não pode** ser desligado.
+
+**Como tirar de verdade (escolha uma):**
+
+1. **Reivindicar a conta preview** (link de claim que o Wrangler imprime,
+   válido ~60 min) **ou**
+2. Na sua máquina: `npx wrangler login` → `npm run deploy` **sem**
+   `--temporary` (conta Cloudflare definitiva).
+
+Depois disso, se ainda aparecer desafio no **domínio próprio**
+(`formulario-live-delas.io` já na conta):
+
+1. Abra [dash.cloudflare.com](https://dash.cloudflare.com) e entre na conta.
+2. Selecione o **domínio** (zona) do site.
+3. **Security → Settings**.
+4. Em **Bot traffic** → **Bot Fight Mode** → **Off**.
+5. Em **Security level** (ou equivalente) → **Essentially Off** ou **Medium**
+   (não Under Attack).
+6. Se sobrar desafio em rota específica: **Security → Security rules** →
+   regra Skip / Allow para aquele hostname (só funciona onde Bot Fight Mode
+   não estiver forçando o desafio).
+
+Em `*.workers.dev` de conta permanente o desafio agressivo de preview costuma
+sumir sozinho após claim/login + deploy; o ajuste fino acima vale sobretudo
+para o domínio `.io`.
+
+**Por que hospedar importa, além de ter um endereço:** a Cloudflare serve em
+`https://`, e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo
+o arquivo direto do computador, os hashes saem vazios e o pareamento com a Meta piora.
+
+### O que o build já resolve
+
+- **Monta o site** com as duas páginas, a política de privacidade e a pasta `assets`.
+- **Cache:** o HTML revalida a cada visita; `assets` ficam 1 hora no navegador
+  (`cloudflare/_headers`).
 - **Cabeçalhos de segurança:** `nosniff`, `Referrer-Policy`, `X-Frame-Options` e
   `Permissions-Policy` desligando geolocalização, microfone e câmera.
 
@@ -363,11 +420,17 @@ Não há Content-Security-Policy de propósito: com pixel, fontes e planilha na 
 uma CSP mal ajustada quebra a página em silêncio. Se quiser depois, dá para montar
 com calma e testar.
 
-### Outras hospedagens
+### Domínio próprio (`formulario-live-delas.io`)
 
-Netlify serve igual (mesmo `vercel.json` não vale, mas o comando de build é o mesmo).
-Em hospedagem tradicional, suba por FTP na raiz do domínio: as duas páginas, a
-política e a pasta `assets` inteira.
+1. No painel do Worker: **Settings → Domains & Routes → Add → Custom domain**.
+2. Digite `formulario-live-delas.io`. Se o DNS já está na Cloudflare dessa conta,
+   o registro e o HTTPS saem sozinhos.
+3. O HTML já aponta canonical/og para `https://formulario-live-delas.io/`.
+
+### Vercel
+
+O [`vercel.json`](vercel.json) continua no repositório. Se preferir a Vercel, importe
+o repositório por lá e escolha a branch `claude/capture-page-ted-sonsantos-o1kzm2`.
 
 ---
 

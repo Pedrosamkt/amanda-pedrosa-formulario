@@ -1,14 +1,37 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * Recebe os leads da página e escreve na planilha "forms site".
+ * Recebe os leads da página e escreve na aba "leads" desta planilha.
  *
- * Este arquivo vive DENTRO da planilha (Extensões → Apps Script).
+ * Planilha alvo (Amanda / presente da live):
+ *   https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit
+ *   Spreadsheet ID: 1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U
+ *
+ * Cole este arquivo no Apps Script (Extensões → Apps Script) dessa
+ * planilha OU em um projeto standalone — PLANILHA_ID abaixo garante
+ * que a gravação sempre acerta a sheet certa.
  * O passo a passo de instalação está no README, seção 4.
+ * Depois de Implantar como app da Web, cole a URL /exec em
+ * assets/js/config.js → CONFIG.webhookUrl.
+ *
+ * IMPORTANTE — implantação (senão o site mostra "sucesso" e a planilha
+ * fica vazia: o fetch do navegador usa no-cors e não lê o 401):
+ *   Executar como: Eu
+ *   Quem pode acessar: Qualquer pessoa
+ * Depois de alterar este .gs: Implantar → Gerenciar implantações →
+ * editar a implantação ativa → Nova versão → Implantar.
  *
  * Opcionalmente também manda a conversão para a Meta pela Conversions
  * API. O token fica nas Propriedades do Script — nunca na página.
  * ═══════════════════════════════════════════════════════════════
  */
+
+/**
+ * ID fixo da planilha alvo. Preferimos openById em vez de
+ * getActiveSpreadsheet(): se o script for colado/implantado como
+ * projeto standalone (não vinculado à sheet), getActiveSpreadsheet()
+ * devolve null e o lead some — ou cai em outra planilha.
+ */
+const PLANILHA_ID = '1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U';
 
 /** Nome da aba onde os leads são gravados. Ela é criada sozinha. */
 const ABA = 'leads';
@@ -28,12 +51,22 @@ const COLUNAS = [
   ['Data',            (d) => Utilities.formatDate(new Date(), FUSO, 'dd/MM/yyyy HH:mm')],
   ['Nome',            (d) => d.nome],
   ['WhatsApp',        (d) => d.whatsapp],
-  ['Negócio',         (d) => d.negocio],
-  ['Cidade',          (d) => d.cidade],
+  ['Instagram',       (d) => d.instagram || d.marca || d.negocio],
   ['Segmento',        (d) => d.segmento],
+  ['Fase',            (d) => d.fase],
+  ['O que vende',     (d) => d.produto],
+  ['Ticket médio',    (d) => d.ticket],
+  ['Canais',          (d) => d.canais],
+  ['Anúncios',        (d) => d.anuncios],
+  ['Resultado dos anúncios', (d) => d.resultado],
+  ['Redes sociais',   (d) => d.redes],
+  ['Atendimento',     (d) => d.atendimento],
+  ['Gargalo',         (d) => d.gargalo],
+  ['Próximo passo',   (d) => d.proximo],
+  /* A versão escura ainda manda estes três. Ficam vazios no presente da live. */
+  ['Cidade',          (d) => d.cidade],
   ['Faturamento',     (d) => d.faturamento],
   ['Investe hoje',    (d) => d.investimento],
-  ['Maior gargalo',   (d) => d.gargalo],
   ['Origem',          (d) => d.utm_source],
   ['Mídia',           (d) => d.utm_medium],
   ['Campanha',        (d) => d.utm_campaign],
@@ -88,8 +121,13 @@ function gravar(dados) {
   }));
 }
 
+/** Abre sempre a planilha do presente da live (ver PLANILHA_ID). */
+function planilhaAlvo() {
+  return SpreadsheetApp.openById(PLANILHA_ID);
+}
+
 function abaDeLeads() {
-  const planilha = SpreadsheetApp.getActiveSpreadsheet();
+  const planilha = planilhaAlvo();
   let aba = planilha.getSheetByName(ABA);
 
   if (!aba) {
@@ -111,8 +149,10 @@ function abaDeLeads() {
     if (colWhats > 0) aba.getRange(2, colWhats, aba.getMaxRows() - 1, 1).setNumberFormat('@');
 
     aba.autoResizeColumns(1, cabecalho.length);
-  } else if (aba.getLastColumn() < cabecalho.length) {
-    /* Colunas novas foram adicionadas em COLUNAS depois da primeira execução */
+  } else if (aba.getLastRow() === 1 || aba.getLastColumn() < cabecalho.length) {
+    /* Cabeçalho acompanha COLUNAS. Se a aba já tem leads no formato antigo,
+       renomeie ela antes de publicar: reescrever a linha 1 não move as
+       respostas que já estavam gravadas. */
     aba.getRange(1, 1, 1, cabecalho.length).setValues([cabecalho]).setFontWeight('bold');
   }
 
@@ -180,7 +220,7 @@ function json(objeto) {
  */
 function registrarFalha(erro, e) {
   try {
-    const planilha = SpreadsheetApp.getActiveSpreadsheet();
+    const planilha = planilhaAlvo();
     let aba = planilha.getSheetByName('erros');
     if (!aba) {
       aba = planilha.insertSheet('erros');
@@ -206,12 +246,17 @@ function testarComLeadFalso() {
       contents: JSON.stringify({
         nome: 'Lead de teste',
         whatsapp: '(62) 90000-0000',
-        negocio: 'Teste',
-        cidade: 'Goiânia, Setor Bueno',
-        segmento: 'Estética e beleza',
-        faturamento: 'R$ 30 mil a R$ 100 mil',
-        investimento: 'Ainda não invisto',
-        gargalo: 'Linha de teste — pode apagar.',
+        instagram: '@marca.teste',
+        segmento: 'Moda',
+        fase: 'Já vendo com regularidade e tenho alguma estrutura',
+        produto: 'Vestido sob medida',
+        ticket: 'R$ 100 a R$ 500',
+        canais: 'Instagram orgânico · Indicação',
+        anuncios: 'Nunca investi',
+        redes: 'Eu mesma(o)',
+        atendimento: 'WhatsApp, eu respondo',
+        gargalo: 'Poucos clientes chegando',
+        proximo: 'Só quero entender melhor por enquanto',
         consent: true,
         utm_source: 'teste',
         utm_campaign: 'instalacao',

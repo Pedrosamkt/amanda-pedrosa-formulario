@@ -22,8 +22,15 @@ const CONFIG = {
      Google: cole aqui a URL do app da web do Apps Script (README, seção 4).
      Também aceita Make, Zapier, n8n ou o seu CRM.
      É por aqui que a Conversions API da Meta é alimentada.
-     Vazio = o lead vai só pelo WhatsApp. */
-  webhookUrl: 'https://script.google.com/macros/s/AKfycbzo-e3Oc4MbKF-VsrDBU8bNHfpK-1NLGPD34aqxQlP8cPheDNkPqcBQ8XgmSDXtv8hZPg/exec',
+     Vazio = o lead vai só pelo WhatsApp.
+
+     Planilha alvo:
+       https://docs.google.com/spreadsheets/d/1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U/edit
+       ID: 1f2_OiTBD_7ab8pMKxQRpfbJGxHhc0LRu41PDKdc0G7U
+     Implantação: App da Web · Executar como Eu · Quem pode acessar:
+     Qualquer pessoa. Sem isso, GET/POST voltam 401 e o no-cors do site
+     ainda mostra sucesso. Após mudar Codigo.gs: Nova versão. */
+  webhookUrl: 'https://script.google.com/macros/s/AKfycbzHBNu0xMx01Qdg6jINEyoroDCHyAJx3lYrIic8ISRVFEpgu5rIXl_zKFpIY9yQeHWvnw/exec',
 
   /* Quanto vale um lead pra você, em reais. Serve para a Meta otimizar
      por valor, não só por volume. Use a conta:
@@ -39,5 +46,5 @@ const CONFIG = {
   redirectOnSuccess: '',
 
   /* Abre o WhatsApp sozinho depois do envio. */
-  autoOpenWhatsapp: true,
+  autoOpenWhatsapp: false,
 };

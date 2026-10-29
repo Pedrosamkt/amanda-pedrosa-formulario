@@ -183,7 +183,7 @@
        financeira, e a cidade já vai embaralhada dentro do user_data.
        Esses campos continuam chegando inteiros na sua planilha. */
     const custom = {
-      content_name: 'Diagnóstico de tráfego',
+      content_name: (dados.instagram || dados.marca) ? 'Presente da live' : 'Diagnóstico de tráfego',
       content_category: dados.segmento || '',
     };
     if (cfg.valorLead > 0) {

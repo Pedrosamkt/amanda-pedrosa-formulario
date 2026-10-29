@@ -31,7 +31,11 @@
   const direct = $('#wpp-direct');
   if (direct) {
     if (numberReady()) {
-      const oi = 'Oi, Amanda. Vim pela página do diagnóstico e queria conversar.';
+      const presente = document.querySelector('#lead-form [name="instagram"]')
+        || document.body.classList.contains('page-form');
+      const oi = presente
+        ? 'Oi, Amanda. Vim pela página e quero o presente da live.'
+        : 'Oi, Amanda. Vim pela página do diagnóstico e queria conversar.';
       direct.href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(oi)}`;
     } else {
       /* sem número configurado, o botão sairia quebrado no ar */
@@ -90,6 +94,24 @@
     tel.value = out;
   });
 
+  /* A carta pede o presente da live. A versão escura continua no diagnóstico. */
+  const isGift = () => Boolean(form.elements.instagram)
+    || document.body.classList.contains('page-form');
+  const INVESTIU = ['Sim, invisto hoje', 'Já investi, mas parei'];
+
+  const control = (name) => {
+    const el = form.elements[name];
+    if (!el) return null;
+    if (!el.tagName && typeof el.length === 'number') return el[0] || null;
+    return el;
+  };
+
+  const valor = (name) => {
+    const el = form.elements[name];
+    if (!el || el.value === undefined) return '';
+    return el.value;
+  };
+
   /* validação */
   const RULES = {
     nome:         (v) => v.trim().length >= 3       || 'Escreve seu nome completo.',
@@ -101,61 +123,195 @@
     investimento: (v) => v !== ''                   || 'Escolhe uma faixa.',
   };
 
+  const GIFT_RULES = {
+    nome:        (v) => v.trim().length >= 2 || 'Escreve seu nome.',
+    instagram:   (v) => {
+      const handle = v.trim().replace(/^@+/, '');
+      return handle.length >= 2 || 'Qual é o @ do Instagram da marca?';
+    },
+    whatsapp:    (v) => v.replace(/\D/g, '').length >= 10 || 'Falta um número com DDD.',
+    segmento:    (v) => v !== '' || 'Escolhe um segmento.',
+    fase:        (v) => v !== '' || 'Escolhe a fase da sua marca.',
+    produto:     (v) => v.trim().length >= 2 || 'Conta em poucas palavras o que você vende.',
+    ticket:      (v) => v !== '' || 'Escolhe uma faixa de ticket.',
+    anuncios:    (v) => v !== '' || 'Escolhe uma opção.',
+    redes:       (v) => v !== '' || 'Escolhe quem cuida das redes.',
+    atendimento: (v) => v.trim().length >= 2 || 'Conta por onde é o atendimento.',
+    gargalo:     (v) => v !== '' || 'Escolhe o maior gargalo.',
+    proximo:     (v) => v !== '' || 'Escolhe uma opção.',
+  };
+
   const setError = (name, msg) => {
-    const field = form.elements[name].closest('.field');
+    const node = control(name);
+    if (!node) return;
+    const field = node.closest('.field');
     const slot = $(`[data-err-for="${name}"]`, form);
-    field.classList.toggle('is-bad', Boolean(msg));
+    if (field) field.classList.toggle('is-bad', Boolean(msg));
     if (slot) slot.textContent = msg || '';
   };
 
-  const validate = () => {
-    let firstBad = null;
+  const marcar = (name, msg, firstBad) => {
+    setError(name, msg);
+    if (msg && !firstBad.el) firstBad.el = control(name);
+  };
+
+  const validateDiag = () => {
+    const firstBad = { el: null };
     Object.entries(RULES).forEach(([name, rule]) => {
-      const res = rule(form.elements[name].value);
-      const msg = res === true ? '' : res;
-      setError(name, msg);
-      if (msg && !firstBad) firstBad = form.elements[name];
+      const res = rule(valor(name));
+      marcar(name, res === true ? '' : res, firstBad);
+    });
+    marcar('consent', form.elements.consent.checked ? '' : 'Preciso da sua autorização para te chamar.', firstBad);
+    return focar(firstBad.el);
+  };
+
+  const validateGift = () => {
+    const firstBad = { el: null };
+    Object.entries(GIFT_RULES).forEach(([name, rule]) => {
+      const res = rule(valor(name));
+      marcar(name, res === true ? '' : res, firstBad);
     });
 
-    const consent = form.elements.consent;
-    if (!consent.checked) {
-      setError('consent', 'Preciso da sua autorização para te chamar.');
-      if (!firstBad) firstBad = consent;
+    if (valor('segmento') === 'outro') {
+      const ok = valor('segmento_outro').trim().length >= 2;
+      marcar('segmento_outro', ok ? '' : 'Conta qual é o segmento.', firstBad);
     } else {
-      setError('consent', '');
+      marcar('segmento_outro', '');
     }
 
-    if (firstBad) {
-      firstBad.focus({ preventScroll: true });
-      firstBad.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const canais = $$('input[name="canais"]:checked', form).map((el) => el.value);
+    marcar('canais', canais.length ? '' : 'Marca pelo menos um caminho.', firstBad);
+    if (canais.includes('outro')) {
+      const ok = valor('canais_outro').trim().length >= 2;
+      marcar('canais_outro', ok ? '' : 'Conta por onde mais os clientes chegam.', firstBad);
+    } else {
+      marcar('canais_outro', '');
     }
-    return !firstBad;
+
+    if (INVESTIU.includes(valor('anuncios'))) {
+      const ok = valor('resultado').trim().length >= 2;
+      marcar('resultado', ok ? '' : 'Conta quanto por mês e qual foi o resultado.', firstBad);
+    } else {
+      marcar('resultado', '');
+    }
+
+    if (valor('gargalo') === 'outro') {
+      const ok = valor('gargalo_outro').trim().length >= 2;
+      marcar('gargalo_outro', ok ? '' : 'Conta qual é o gargalo.', firstBad);
+    } else {
+      marcar('gargalo_outro', '');
+    }
+
+    marcar('consent', form.elements.consent.checked ? '' : 'Preciso da sua autorização para te chamar.', firstBad);
+    return focar(firstBad.el);
   };
+
+  const focar = (el) => {
+    if (!el) return true;
+    const field = el.closest('.field') || el;
+    el.focus({ preventScroll: true });
+    field.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return false;
+  };
+
+  const validate = () => (isGift() ? validateGift() : validateDiag());
+
+  const syncConditional = () => {
+    if (!isGift()) return;
+    $('#campo-segmento-outro').hidden = valor('segmento') !== 'outro';
+    const canalOutro = $$('input[name="canais"]', form).some((el) => el.value === 'outro' && el.checked);
+    $('#campo-canais-outro').hidden = !canalOutro;
+    $('#campo-resultado').hidden = !INVESTIU.includes(valor('anuncios'));
+    $('#campo-gargalo-outro').hidden = valor('gargalo') !== 'outro';
+  };
+  syncConditional();
+
+  $$('select', form).forEach((sel) => {
+    const paint = () => sel.classList.toggle('is-filled', sel.value !== '');
+    paint();
+    sel.addEventListener('change', paint);
+  });
 
   /* limpa o erro assim que a pessoa corrige */
   $$('input, select, textarea', form).forEach((el) => {
-    el.addEventListener('change', () => { if (el.name in RULES || el.name === 'consent') setError(el.name, ''); });
+    const limpar = () => { if (el.name) setError(el.name, ''); };
+    el.addEventListener('input', limpar);
+    el.addEventListener('change', () => { limpar(); syncConditional(); });
   });
 
   const collect = () => {
     const data = {};
-    new FormData(form).forEach((v, k) => { data[k] = typeof v === 'string' ? v.trim() : v; });
+    new FormData(form).forEach((v, k) => {
+      const val = typeof v === 'string' ? v.trim() : v;
+      if (data[k] === undefined) data[k] = val;
+      else if (Array.isArray(data[k])) data[k].push(val);
+      else data[k] = [data[k], val];
+    });
+    Object.keys(data).forEach((k) => {
+      if (Array.isArray(data[k])) data[k] = data[k].filter(Boolean).join(' · ');
+    });
+
+    if (isGift()) {
+      if (data.segmento === 'outro') {
+        data.segmento = data.segmento_outro ? `Outro: ${data.segmento_outro}` : 'Outro';
+      }
+      delete data.segmento_outro;
+
+      if (typeof data.canais === 'string' && data.canais.split(' · ').includes('outro')) {
+        const partes = data.canais.split(' · ').filter((x) => x !== 'outro');
+        partes.push(data.canais_outro ? `Outro: ${data.canais_outro}` : 'Outro');
+        data.canais = partes.join(' · ');
+      }
+      delete data.canais_outro;
+
+      if (data.gargalo === 'outro') {
+        data.gargalo = data.gargalo_outro ? `Outro: ${data.gargalo_outro}` : 'Outro';
+      }
+      delete data.gargalo_outro;
+
+      if (!INVESTIU.includes(data.anuncios)) delete data.resultado;
+    }
+
     data.consent = form.elements.consent.checked;
     data.enviado_em = new Date().toISOString();
     return data;
   };
 
   const whatsappLink = (d) => {
-    const linhas = [
-      'Oi, Amanda. Preenchi o formulário do diagnóstico.',
-      '',
-      `Nome: ${d.nome}`,
-      `Negócio: ${d.negocio} (${d.segmento})`,
-      `Onde: ${d.cidade}`,
-      `Faturamento: ${d.faturamento}`,
-      `Investe hoje: ${d.investimento}`,
-    ];
-    if (d.gargalo) linhas.push(`Maior gargalo: ${d.gargalo}`);
+    const linhas = isGift()
+      ? [
+          'Oi, Amanda. Quero meu presente da live.',
+          '',
+          `Nome: ${d.nome}`,
+          `Instagram: ${d.instagram}`,
+          `WhatsApp: ${d.whatsapp}`,
+          `Segmento: ${d.segmento}`,
+          `Fase: ${d.fase}`,
+          `O que vende: ${d.produto}`,
+          `Ticket médio: ${d.ticket}`,
+          `Clientes chegam por: ${d.canais}`,
+          `Anúncios: ${d.anuncios}`,
+        ]
+      : [
+          'Oi, Amanda. Preenchi o formulário do diagnóstico.',
+          '',
+          `Nome: ${d.nome}`,
+          `Negócio: ${d.negocio} (${d.segmento})`,
+          `Onde: ${d.cidade}`,
+          `Faturamento: ${d.faturamento}`,
+          `Investe hoje: ${d.investimento}`,
+        ];
+    if (isGift()) {
+      if (d.resultado) linhas.push(`Resultado dos anúncios: ${d.resultado}`);
+      linhas.push(
+        `Redes sociais: ${d.redes}`,
+        `Atendimento: ${d.atendimento}`,
+        `Maior gargalo: ${d.gargalo}`,
+        `Próximo passo: ${d.proximo}`,
+      );
+    } else if (d.gargalo) {
+      linhas.push(`Maior gargalo: ${d.gargalo}`);
+    }
     return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(linhas.join('\n'))}`;
   };
 
@@ -166,9 +322,9 @@
     $('#done-nome').textContent = d.nome.split(' ')[0];
 
     const wpp = $('#done-wpp');
-    if (!numberReady()) {
+    if (wpp && !numberReady()) {
       wpp.remove();               // número ainda não configurado
-    } else {
+    } else if (wpp) {
       wpp.href = link;
     }
 
@@ -207,15 +363,20 @@
         if (/script\.google\.com/.test(CONFIG.webhookUrl)) {
           /* Planilha do Google. O Apps Script não responde ao preflight do
              navegador, então mandamos como texto simples (que dispensa
-             preflight) e em modo no-cors. O dado chega; a resposta vem
-             opaca, então não dá para ler o status — só falha de rede
-             aparece aqui. Se um lead sumir, ele está na aba "erros". */
+             preflight) e em modo no-cors. A resposta é opaca: HTTP 401
+             (implantação sem "Qualquer pessoa") ainda parece "ok" aqui.
+             Confira na planilha / Execuções do Apps Script. Aba "erros"
+             guarda falhas que o script conseguiu registrar. */
+          console.info(
+            '[form] Enviando lead ao Apps Script (no-cors). Sucesso na tela NÃO confirma gravação na planilha — confira a aba leads.',
+          );
           await fetch(CONFIG.webhookUrl, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: corpo,
           });
+          console.info('[form] POST disparado (resposta opaca). event_id=', data.event_id || '(sem)');
         } else {
           const res = await fetch(CONFIG.webhookUrl, {
             method: 'POST',
