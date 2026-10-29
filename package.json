@@ -1,0 +1,13 @@
+{
+  "name": "amanda-pedrosa",
+  "private": true,
+  "scripts": {
+    "build": "bash scripts/build-site.sh",
+    "dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "check": "npm run build && wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4.45.0"
+  }
+}

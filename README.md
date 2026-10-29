@@ -312,52 +312,30 @@ verdade antes de subir, ou troque:
 
 ---
 
-## 7. Publicar na Vercel
+## 7. Publicar na Cloudflare
 
-O [`vercel.json`](vercel.json) já está pronto: monta o site, define o cache e liga
-os cabeçalhos de segurança. **Você não precisa configurar nada no painel** — a
-Vercel lê esse arquivo.
-
-**1.** Entre em [vercel.com](https://vercel.com) e crie a conta com **Continue with
-GitHub**. Autorize o acesso ao repositório `amanda-pedrosa-formulario`.
-
-**2.** No painel: **Add New → Project → Import** no repositório.
-
-**3.** Na tela de importação, **mude só uma coisa**: em *Branch*, escolha
-`claude/capture-page-ted-sonsantos-o1kzm2`. O repositório não tem `main`, e a Vercel
-sugere ela por padrão. Todo o resto (framework, build command, output directory)
-deixe **como está** — vem do `vercel.json`.
-
-**4.** Clique em **Deploy** e espere. Em cerca de um minuto sai o endereço:
+O site sobe como [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/):
+HTML, CSS e JavaScript servidos na rede da Cloudflare, sem servidor. O
+[`wrangler.jsonc`](wrangler.jsonc) aponta para a pasta `public`, que o build monta.
+README, planilha e este arquivo não vão ao ar.
 
 ```
-https://amanda-pedrosa-formulario.vercel.app
+npm install
+npm run deploy
 ```
 
-A partir daí, todo commit nessa branch republica o site sozinho.
+Na primeira vez, o Wrangler pede login na conta da Cloudflare (`npx wrangler login`).
+O endereço fica em `https://amanda-pedrosa.<sua-subconta>.workers.dev`.
 
-O que vai ao ar é só o que o navegador precisa — as duas páginas, a política de
-privacidade e a pasta `assets`. O README e o script da planilha continuam no
-repositório, mas fora do ar.
+**Por que hospedar importa, além de ter um endereço:** a Cloudflare serve em
+`https://`, e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo
+o arquivo direto do computador, os hashes saem vazios e o pareamento com a Meta piora.
 
-**Por que hospedar importa, além de ter um endereço:** a Vercel serve em `https://`,
-e é só em HTTPS que o navegador libera a criptografia SHA-256. Abrindo o arquivo
-direto do computador, os hashes saem vazios e o pareamento com a Meta piora.
+### O que o build já resolve
 
-### Domínio próprio
-
-1. No projeto: **Settings → Domains → Add**, escreva o seu domínio.
-2. A Vercel mostra o registro de DNS para criar no painel do seu domínio —
-   normalmente um `CNAME` de `www` apontando para `cname.vercel-dns.com`.
-3. O certificado HTTPS sai sozinho depois da propagação.
-4. Volte no `index.html` e troque `SEU-DOMINIO.com.br` nas tags de canonical e de
-   compartilhamento.
-
-### O que o `vercel.json` já resolve
-
-- **Monta o site** com apenas os arquivos públicos, numa pasta `public`.
-- **Cache:** HTML sempre revalidado (uma correção de texto aparece na hora), `assets`
-  guardados por 1 hora.
+- **Monta o site** com as duas páginas, a política de privacidade e a pasta `assets`.
+- **Cache:** o HTML revalida a cada visita; `assets` ficam 1 hora no navegador
+  (`cloudflare/_headers`).
 - **Cabeçalhos de segurança:** `nosniff`, `Referrer-Policy`, `X-Frame-Options` e
   `Permissions-Policy` desligando geolocalização, microfone e câmera.
 
@@ -365,11 +343,17 @@ Não há Content-Security-Policy de propósito: com pixel, fontes e planilha na 
 uma CSP mal ajustada quebra a página em silêncio. Se quiser depois, dá para montar
 com calma e testar.
 
-### Outras hospedagens
+### Domínio próprio
 
-Netlify serve igual (mesmo `vercel.json` não vale, mas o comando de build é o mesmo).
-Em hospedagem tradicional, suba por FTP na raiz do domínio: as duas páginas, a
-política e a pasta `assets` inteira.
+1. No painel do Worker: **Settings → Domains & Routes → Add → Custom domain**.
+2. Escreva o domínio. Se o DNS já está na Cloudflare, o registro e o HTTPS saem sozinhos.
+3. Volte no `index.html` e troque `SEU-DOMINIO.com.br` nas tags de canonical e de
+   compartilhamento.
+
+### Vercel
+
+O [`vercel.json`](vercel.json) continua no repositório. Se preferir a Vercel, importe
+o repositório por lá e escolha a branch `claude/capture-page-ted-sonsantos-o1kzm2`.
 
 ---
 
